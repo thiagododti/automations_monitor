@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from apps.users.managers import UserManager
 
 
 class User(AbstractUser):
@@ -11,25 +12,34 @@ class User(AbstractUser):
         max_length=15,
         blank=True,
         null=True,
-        verbose_name="Telephone"
+        verbose_name="Telefone"
     )
     birthday = models.DateField(
         blank=True,
         null=True,
-        verbose_name="Birthday"
+        verbose_name="Aniversário"
     )
     photo = models.ImageField(
         upload_to='user_photos/',
         blank=True,
         null=True,
-        verbose_name="User Photo"
+        verbose_name="Foto do Perfil"
     )
+    objects: UserManager = UserManager()  # type: ignore
+
+    REQUIRED_FIELDS = [
+        'email',
+        'first_name',
+        'last_name',
+        'telephone',
+        'birthday'
+    ]
 
     def __str__(self):
         return self.username
 
     class Meta:
         db_table = 'user'
-        verbose_name = "User"
-        verbose_name_plural = "Users"
+        verbose_name = "Usuário"
+        verbose_name_plural = "Usuários"
         ordering = ['first_name', 'last_name']

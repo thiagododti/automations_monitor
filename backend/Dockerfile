@@ -32,5 +32,3 @@ COPY . .
 RUN mkdir -p /vol/web/media /vol/web/logs
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-
-CMD ["gunicorn", "config.wsgi:application","--bind", "0.0.0.0:8000","--workers", "3","--threads", "2","--timeout", "60"]
