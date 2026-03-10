@@ -9,7 +9,9 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
-    
+    networks:
+      - app_network
+
 
   backend:
     container_name: backend
@@ -23,27 +25,30 @@ services:
       - log_data:/vol/web/logs
     depends_on:
       - db
-    expose:
-      - "8000"
-    # Define servidores DNS personalizados se precisar resolver nomes de domínio específicos
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
-    
-    restart: unless-stopped
-    command: [
-      "gunicorn", "config.wsgi:application",
-      "--bind", "0.0.0.0:8000",
-      "--workers", "3",
-      "--threads", "2",
-      "--timeout", "60"
+    command:
+      [
+        "gunicorn",
+        "config.wsgi:application",
+        "--bind",
+        "0.0.0.0:3000",
+        "--workers",
+        "3",
+        "--threads",
+        "2",
+        "--timeout",
+        "60"
       ]
-    
+    restart: unless-stopped
+    networks:
+      - app_network
+
+
   nginx:
     container_name: nginx
-    build: ./nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
     ports:
-      - "80:80"
       - "443:443"
     volumes:
       - media_data:/vol/web/media
@@ -52,9 +57,17 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - app_network
+
 
 volumes:
   postgres_data:
   media_data:
   log_data:
   certificates_data:
+
+
+networks:
+  app_network:
+    driver: bridge
