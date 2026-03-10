@@ -15,6 +15,7 @@ import {
 import { UserStatusBadge } from "./components/UserStatusBadge";
 import { UserFormDialog } from "./components/UserFormDialog";
 import { format } from "date-fns";
+import { usersService } from "@/services/usersServices";
 
 export function UsersPage() {
   const [data, setData] = useState<PaginatedResponse<User> | null>(null);
@@ -27,10 +28,8 @@ export function UsersPage() {
   const fetchUsers = useCallback(async (p: number) => {
     setLoading(true);
     try {
-      const res = await httpClient<PaginatedResponse<User>>(`/users/?page=${p}`);
+      const res = await usersService.list(p);
       setData(res);
-    } catch {
-      // handled by httpClient
     } finally {
       setLoading(false);
     }
@@ -40,20 +39,14 @@ export function UsersPage() {
     fetchUsers(page);
   }, [page, fetchUsers]);
 
-  const handleCreate = async (payload: CreateUserPayload | UpdateUserPayload) => {
-    await httpClient("/users/", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+  const handleCreate = async (payload: CreateUserPayload) => {
+    await usersService.create(payload);
     fetchUsers(page);
   };
 
-  const handleUpdate = async (payload: CreateUserPayload | UpdateUserPayload) => {
+  const handleUpdate = async (payload: UpdateUserPayload) => {
     if (!editingUser) return;
-    await httpClient(`/users/${editingUser.id}/`, {
-      method: "PATCH",
-      body: JSON.stringify(payload),
-    });
+    await usersService.update(editingUser.id, payload);
     fetchUsers(page);
   };
 

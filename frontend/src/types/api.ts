@@ -50,7 +50,7 @@ export interface CreateUserPayload {
   is_active?: boolean;
   telephone?: string;
   birthday?: string;
-  photo?: string;
+  photo?: File;
 }
 
 export type UpdateUserPayload = Partial<Omit<CreateUserPayload, 'username' | 'password'>>;

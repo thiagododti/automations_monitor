@@ -42,12 +42,12 @@ async function getValidToken(): Promise<string | null> {
 
   if (!isTokenExpired(access)) return access;
 
-  // Deduplicate concurrent refresh calls
   if (!refreshPromise) {
     refreshPromise = refreshAccessToken().finally(() => {
       refreshPromise = null;
     });
   }
+
   return refreshPromise;
 }
 
@@ -57,10 +57,16 @@ export async function httpClient<T = unknown>(
 ): Promise<T> {
   const token = await getValidToken();
 
+  const isFormData = options.body instanceof FormData;
+
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
+
+  // Só define JSON se não for FormData
+  if (!isFormData && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
@@ -83,5 +89,6 @@ export async function httpClient<T = unknown>(
   }
 
   if (res.status === 204) return undefined as T;
+
   return res.json();
 }

@@ -35,6 +35,7 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: Props) {
     is_staff: false,
     is_superuser: false,
     is_active: true,
+    photo: null as File | null,
   });
 
   const initialValues = useRef(form);
@@ -52,6 +53,7 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: Props) {
         is_staff: user.is_staff,
         is_superuser: user.is_superuser,
         is_active: user.is_active,
+        photo: null as File | null,
       };
       setForm(values);
       initialValues.current = values;
@@ -67,6 +69,7 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: Props) {
         is_staff: false,
         is_superuser: false,
         is_active: true,
+        photo: null as File | null,
       };
       setForm(values);
       initialValues.current = values;
@@ -75,7 +78,7 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: Props) {
     setFlashFields(new Set());
   }, [open, user]);
 
-  const setField = (key: string, value: string | boolean) => {
+  const setField = (key: string, value: string | boolean | File | null) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -92,10 +95,15 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: Props) {
         for (const key of Object.keys(form) as (keyof typeof form)[]) {
           if (key === "password") continue;
           if (key === "username") continue;
+          if (key === "photo") continue;
           if (form[key] !== initialValues.current[key]) {
             changed[key] = form[key];
             changedKeys.push(key);
           }
+        }
+        if (form.photo) {
+          changed.photo = form.photo;
+          changedKeys.push("photo");
         }
         if (form.password) {
           changed.password = form.password;
@@ -205,7 +213,18 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: Props) {
               />
             </div>
           </div>
-
+          <div className={`space-y-2 ${fieldClass("photo")}`}>
+            <Label htmlFor="form-photo">Foto</Label>
+            <Input
+              id="form-photo"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setField("photo", file);
+              }}
+            />
+          </div>
           <div className="flex gap-6 pt-2">
             <div className={`flex items-center gap-2 ${fieldClass("is_active")}`}>
               <Checkbox
