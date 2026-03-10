@@ -25,6 +25,7 @@ DJANGO_APPS = [
 
 LOCAL_APPS = [
     'apps.users.apps.UsersConfig',
+    'apps.automations.apps.AutomationsConfig',
 ]
 
 OTHERS_APPS = [
@@ -106,13 +107,18 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+# ---------------------------------------------------------------------------------------------
+# Direção de arquivos estáticos e de mídia
+# ---------------------------------------------------------------------------------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.getenv("MEDIA_ROOT")
 
+# ---------------------------------------------------------------------------------------------
+# Rest Framework
+# ---------------------------------------------------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -125,6 +131,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
 
+# ---------------------------------------------------------------------------------------------
+# Swagger UI
+# ---------------------------------------------------------------------------------------------
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Django Backend API',
     'DESCRIPTION': 'Projeto em django com backend exclusivo para APIs RESTful',
@@ -133,13 +142,18 @@ SPECTACULAR_SETTINGS = {
     "SORT_OPERATION_PARAMETERS": False,
 }
 
+# ---------------------------------------------------------------------------------------------
+# Simple JWT
+# ---------------------------------------------------------------------------------------------
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_ACCESS_MINUTES', 60))),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('JWT_REFRESH_DAYS', 1))),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-
+# ---------------------------------------------------------------------------------------------
+# Logs
+# ---------------------------------------------------------------------------------------------
 if not DEBUG:
     LOGS_DIR = os.getenv('LOG_ROOT', '')
     os.makedirs(LOGS_DIR, exist_ok=True)
@@ -166,3 +180,41 @@ if not DEBUG:
             },
         },
     }
+
+# ---------------------------------------------------------------------------------------------
+# Cosrs Headers
+# ---------------------------------------------------------------------------------------------
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+
+# configurações de CORS
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+
+# Se você precisar enviar cookies / credenciais:
+CORS_ALLOW_CREDENTIALS = True
+
+# (opcional) Métodos e headers permitidos — geralmente os defaults já cobrem:
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
