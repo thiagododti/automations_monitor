@@ -1,4 +1,5 @@
 # ---------- BUILD DO FRONTEND ----------
+# O processo de build do frontend é feito em uma etapa separada para otimizar a construção da imagem final do Nginx.
 FROM node:20-alpine AS frontend-builder
 
 WORKDIR /frontend

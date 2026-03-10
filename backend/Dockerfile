@@ -1,23 +1,14 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV TZ=America/Sao_Paulo
 
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     tzdata \
-    netcat-openbsd \
     libpq-dev \
-    iputils-ping \
-    net-tools \
-    gcc \
-    pkg-config \
-    default-libmysqlclient-dev \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone \
+    netcat-openbsd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
