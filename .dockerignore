@@ -6,3 +6,8 @@ backend/staticfiles/
 __pycache__/
 
 logs/
+
+.venv/
+frontend/dist/
+frontend/node_modules/
+
