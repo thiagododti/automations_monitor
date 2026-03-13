@@ -26,6 +26,8 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     'apps.users.apps.UsersConfig',
     'apps.automations.apps.AutomationsConfig',
+    'apps.executions.apps.ExecutionsConfig',
+    'apps.departments.apps.DepartmentsConfig'
 ]
 
 OTHERS_APPS = [
@@ -184,11 +186,12 @@ if not DEBUG:
 # ---------------------------------------------------------------------------------------------
 # Cosrs Headers
 # ---------------------------------------------------------------------------------------------
-USE_X_FORWARDED_HOST = True
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # configurações de CORS

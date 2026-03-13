@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from apps.users.managers import UserManager
 
 
+
 class User(AbstractUser):
     """
     Modelo personalizado de usuário que estende o AbstractUser do Django.
@@ -25,6 +26,14 @@ class User(AbstractUser):
         null=True,
         verbose_name="Foto do Perfil"
     )
+    department = models.ForeignKey(
+        "Department",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name="Departamento"
+    )
+
     objects: UserManager = UserManager()  # type: ignore
 
     REQUIRED_FIELDS = [
@@ -39,7 +48,7 @@ class User(AbstractUser):
         return self.username
 
     class Meta:
-        db_table = 'user'
+        db_table = 'users'
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
         ordering = ['first_name', 'last_name']

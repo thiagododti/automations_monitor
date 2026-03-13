@@ -42,25 +42,7 @@ class UserSerializer(UserReadSerializer):
             # Criação: senha é obrigatória
             self.fields['password'].required = True
 
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)  # 🔐 hash correto
-        user.save()
-        return user
-
-    def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
-
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        if password:
-            instance.set_password(password)
-
-        instance.save()
-        return instance
-
+    @staticmethod
     def validate_foto(self, value):
         max_size = 2 * 1024 * 1024  # 2MB
         if value.size > max_size:

@@ -28,11 +28,17 @@ class PermissionsUserMixin(
 class UserViewSet(PermissionsUserMixin):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     # opcional, se você usar TokenAuth
-    authentication_classes = [JWTAuthentication]
+    # authentication_classes = [JWTAuthentication]
     filterset_class = UserFilterSet
     parser_classes = [MultiPartParser]
+
+    def perform_create(self, serializer):
+        serializer.save(updated_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

@@ -1,19 +1,22 @@
 from django.db import models
 from django.conf import settings
 
-class Automation(models.Model):
+class Department(models.Model):
     name = models.CharField(
-        max_length=255,
-        verbose_name='Nome da Automação'
+        max_length=200,
+        unique=True,
+        null=False,
+        blank=False,
+        verbose_name='Departamento'
     )
     description = models.TextField(
-        blank=True,
         null=True,
-        verbose_name='Descrição da Automação'
+        blank=True,
+        verbose_name='Descrição'
     )
-    is_active = models.BooleanField(
+    status = models.BooleanField(
         default=True,
-        verbose_name='Ativa'
+        verbose_name="Status"
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -26,22 +29,18 @@ class Automation(models.Model):
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        blank=True,
         null=True,
+        blank=True,
         related_name='updated_by',
         verbose_name='Atualizado por'
     )
-    manual_time = models.BigIntegerField(
-        blank=True,
-        null=True,
-        verbose_name='Tempo Manual (seg)'
-    )
+
 
     def __str__(self):
         return self.name
 
     class Meta:
-        db_table = 'automations'
-        verbose_name = 'Automação'
-        verbose_name_plural = 'Automações'
-        ordering = ['-created_at']
+        db_table = 'departaments'
+        verbose_name = "Departamento"
+        verbose_name_plural = "Departamentos"
+        ordering = ['name']

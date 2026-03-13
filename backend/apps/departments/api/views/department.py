@@ -3,15 +3,15 @@ from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from apps.automations.models import Automation
-from apps.automations.api.serializers import AutomationSerializer
-from apps.automations.api.filters import AutomationFilterSet
+from apps.departments.models import Department
+from apps.departments.api.serializers import DepartmentSerializer
+from apps.departments.api.filters import DepartmentFilterSet
 
 @extend_schema(
-    tags=['Automações'],
-    description="Operações de CRUD para Automações"
+    tags=['Departamento'],
+    description='Operações de CRUD para Departamento'
 )
-class PermissionsAutomationMixin(
+class PermissionsDepartmentMixin(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
@@ -20,11 +20,10 @@ class PermissionsAutomationMixin(
     # mixins.DestroyModelMixin,
 ):
     pass
-
-class AutomationViewSet(PermissionsAutomationMixin):
-    queryset =  Automation.objects.all()
-    serializer_class = AutomationSerializer
-    filterset_class = AutomationFilterSet
+class DepartmentViewSet(PermissionsDepartmentMixin):
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer
+    filterset_class = DepartmentFilterSet
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):

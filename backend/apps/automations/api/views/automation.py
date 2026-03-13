@@ -9,7 +9,7 @@ from apps.automations.api.filters import AutomationFilterSet
 
 @extend_schema(
     tags=['Automações'],
-    description="Operações de CRUD para Automações"
+    description='Operações de CRUD para Automações'
 )
 class PermissionsAutomationMixin(
     viewsets.GenericViewSet,
@@ -21,14 +21,18 @@ class PermissionsAutomationMixin(
 ):
     pass
 
-class AutomationViewSet(PermissionsAutomationMixin):
-    queryset =  Automation.objects.all()
+class AutomationViewSet(
+    PermissionsAutomationMixin
+):
+    queryset = Automation.objects.all()
     serializer_class = AutomationSerializer
     filterset_class = AutomationFilterSet
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def perform_create(self, serializer):
         serializer.save(updated_by=self.request.user)
 
     def perform_update(self, serializer):
-        serializer.save(updated_by=self.request.user)
+        serializer.save(updated_by=self.request.user
+)
