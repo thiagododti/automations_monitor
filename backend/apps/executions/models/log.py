@@ -3,7 +3,7 @@ from .choices import *
 
 class Log(models.Model):
     execution = models.ForeignKey(
-        "Execution",
+        "executions.Execution",
         on_delete=models.CASCADE,
         related_name="steps",
         verbose_name='Execução',

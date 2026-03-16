@@ -3,9 +3,9 @@ from .choices import *
 
 class Step(models.Model):
     execution = models.ForeignKey(
-        "Execution",
+        "executions.Execution",
         on_delete=models.CASCADE,
-        related_name="steps",
+        related_name="executions",
         verbose_name='Execução',
     )
     identification = models.CharField(
@@ -30,8 +30,9 @@ class Step(models.Model):
     )
 
     @property
-    def time_seconds(self):
-        return (self.date_end - self.date_start).total_seconds()
+    def time_execution(self) -> int:
+        time_execution = self.date_end - self.date_start
+        return int(time_execution.total_seconds())
 
     def __str__(self):
         return str(self.identification)

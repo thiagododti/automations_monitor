@@ -4,7 +4,7 @@ from .choices import *
 
 class Execution(models.Model):
     automation = models.ForeignKey(
-        "Automation",
+        "automations.Automation",
         on_delete=models.CASCADE,
         related_name="executions",
         verbose_name='Automação',

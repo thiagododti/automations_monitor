@@ -28,7 +28,7 @@ class Automation(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='updated_by',
+        related_name='automations_updated_by',
         verbose_name='Atualizado por'
     )
     manual_time = models.BigIntegerField(

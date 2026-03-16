@@ -31,7 +31,7 @@ class Department(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='updated_by',
+        related_name='departments_updated_by',
         verbose_name='Atualizado por'
     )
 

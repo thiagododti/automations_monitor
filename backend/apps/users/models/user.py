@@ -27,11 +27,12 @@ class User(AbstractUser):
         verbose_name="Foto do Perfil"
     )
     department = models.ForeignKey(
-        "Department",
+        "departments.Department",
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        verbose_name="Departamento"
+        verbose_name="Departamento",
+        related_name='departments',
     )
 
     objects: UserManager = UserManager()  # type: ignore

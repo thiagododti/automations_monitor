@@ -9,9 +9,11 @@ class StepSerializer(serializers.ModelSerializer):
             "identification",
             "status",
             "date_start",
-            "date_end"
+            "date_end",
+            "time_execution"
         ]
         read_only_fields = [
             "date_start",
-            "date_end" # verificar se vai manter read_only ou automatizar
+            "date_end", # verificar se vai manter read_only ou automatizar
+            "time_execution"
         ]
