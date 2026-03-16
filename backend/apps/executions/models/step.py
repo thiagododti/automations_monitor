@@ -1,6 +1,7 @@
 from django.db import models
 from .choices import *
 
+
 class Step(models.Model):
     execution = models.ForeignKey(
         "executions.Execution",
@@ -30,7 +31,7 @@ class Step(models.Model):
     )
 
     @property
-    def time_execution(self):
+    def time_execution(self) -> int | None:
         if not self.date_end:
             return None
 

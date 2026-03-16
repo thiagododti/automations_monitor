@@ -11,7 +11,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 
 @extend_schema(
-    tags=["Usuario"],  # esta será a seção/grupo no Swagger
+    tags=["Usuários"],  # esta será a seção/grupo no Swagger
     description="Operações de CRUD para usuários."
 )
 class PermissionsUserMixin(

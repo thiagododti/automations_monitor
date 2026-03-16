@@ -29,7 +29,7 @@ class AutomationViewSet(PermissionsAutomationMixin):
     serializer_class = AutomationSerializer
     filterset_class = AutomationFilterSet
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    # authentication_classes = [JWTAuthentication]
 
     def perform_create(self, serializer):
         serializer.save(updated_by=self.request.user)
