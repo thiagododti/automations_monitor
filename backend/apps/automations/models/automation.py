@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 class Automation(models.Model):
     name = models.CharField(
         max_length=255,
@@ -23,12 +24,20 @@ class Automation(models.Model):
         auto_now=True,
         verbose_name='Atualizado em'
     )
+    department = models.ForeignKey(
+        'departments.Department',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='automations',
+        verbose_name='Departamento'
+    )
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='automations_updated_by',
+        related_name='updated_automations',
         verbose_name='Atualizado por'
     )
     manual_time = models.BigIntegerField(

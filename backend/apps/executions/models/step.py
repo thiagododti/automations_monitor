@@ -5,7 +5,7 @@ class Step(models.Model):
     execution = models.ForeignKey(
         "executions.Execution",
         on_delete=models.CASCADE,
-        related_name="executions",
+        related_name="steps",
         verbose_name='Execução',
     )
     identification = models.CharField(
@@ -30,9 +30,11 @@ class Step(models.Model):
     )
 
     @property
-    def time_execution(self) -> int:
-        time_execution = self.date_end - self.date_start
-        return int(time_execution.total_seconds())
+    def time_execution(self):
+        if not self.date_end:
+            return None
+
+        return int((self.date_end - self.date_start).total_seconds())
 
     def __str__(self):
         return str(self.identification)

@@ -26,7 +26,7 @@ class PermissionsUserMixin(
 
 
 class UserViewSet(PermissionsUserMixin):
-    queryset = User.objects.all()
+    queryset = User.objects.select_related('department').all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     # opcional, se você usar TokenAuth

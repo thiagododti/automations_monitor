@@ -1,8 +1,34 @@
 from rest_framework import serializers
 from apps.users.models import User
+from apps.departments.models import Department
+
+
+class DepartmentUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = [
+            "name",
+            "description",
+            "status"
+        ]
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'first_name',
+            'last_name',
+        ]
 
 
 class UserReadSerializer(serializers.ModelSerializer):
+
+    department_data = DepartmentUserSerializer(
+        read_only=True, source="department")
+    updated_by_data = UserUpdateSerializer(
+        read_only=True, source="updated_by")
+
     class Meta:
         model = User
         fields = [
@@ -18,7 +44,17 @@ class UserReadSerializer(serializers.ModelSerializer):
             'date_joined',
             'telephone',
             'birthday',
-            'photo'
+            'photo',
+            'updated_by',
+            "department",
+            "department_data",
+            "updated_by_data",
+        ]
+        read_only_fields = [
+            "department_data",
+            "date_joined",
+            "updated_by",
+            "updated_by_data",
         ]
 
 

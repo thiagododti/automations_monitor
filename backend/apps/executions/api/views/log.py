@@ -24,7 +24,7 @@ class PermissionsLogMixin(
 
 
 class LogViewSet(PermissionsLogMixin):
-    queryset = Log.objects.all()
+    queryset = Log.objects.select_related('execution').all()
     serializer_class = LogSerializer
     filterset_class = LogFilterSet
     permission_classes = [IsAuthenticated]

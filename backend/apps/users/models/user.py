@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from apps.users.managers import UserManager
 
 
-
 class User(AbstractUser):
     """
     Modelo personalizado de usuário que estende o AbstractUser do Django.
@@ -32,7 +31,14 @@ class User(AbstractUser):
         blank=True,
         null=True,
         verbose_name="Departamento",
-        related_name='departments',
+        related_name='users',
+    )
+    updated_by = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="updated_users"
     )
 
     objects: UserManager = UserManager()  # type: ignore

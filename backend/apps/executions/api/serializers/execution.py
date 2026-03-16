@@ -1,15 +1,32 @@
 from rest_framework import serializers
 from apps.executions.models import Execution
+from apps.automations.models import Automation
+
+
+class AutomationExecutionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Automation
+        fields = [
+            "name",
+            "description",
+            "is_active"
+        ]
+
+
 
 class ExecutionSerializer(serializers.ModelSerializer):
+    automation_data = AutomationExecutionSerializer(read_only=True, source="automation")
     class Meta:
         model = Execution
         fields = [
-            "automation_id",
+            'id',
             "date_start",
             "date_end",
-            "status"
+            "status",
+            "automation",
+            "automation_data"
         ]
         read_only_fields = [
-            "date_start"
+            "date_start",
+            "automation_data"
         ]

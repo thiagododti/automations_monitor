@@ -5,7 +5,7 @@ class Log(models.Model):
     execution = models.ForeignKey(
         "executions.Execution",
         on_delete=models.CASCADE,
-        related_name="steps",
+        related_name="logs",
         verbose_name='Execução',
     )
     description = models.CharField(

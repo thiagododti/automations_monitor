@@ -7,6 +7,7 @@ from apps.automations.models import Automation
 from apps.automations.api.serializers import AutomationSerializer
 from apps.automations.api.filters import AutomationFilterSet
 
+
 @extend_schema(
     tags=['Automações'],
     description='Operações de CRUD para Automações'
@@ -21,10 +22,10 @@ class PermissionsAutomationMixin(
 ):
     pass
 
-class AutomationViewSet(
-    PermissionsAutomationMixin
-):
-    queryset = Automation.objects.all()
+
+class AutomationViewSet(PermissionsAutomationMixin):
+    queryset = Automation.objects.select_related(
+        'updated_by', 'department').all()
     serializer_class = AutomationSerializer
     filterset_class = AutomationFilterSet
     permission_classes = [IsAuthenticated]
@@ -35,4 +36,4 @@ class AutomationViewSet(
 
     def perform_update(self, serializer):
         serializer.save(updated_by=self.request.user
-)
+                        )

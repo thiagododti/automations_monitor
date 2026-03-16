@@ -32,6 +32,7 @@ urlpatterns = [
 
 
 if settings.DEBUG:
+    urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
     if getattr(settings, "MEDIA_URL", None) and getattr(settings, "MEDIA_ROOT", None):
         urlpatterns += static(settings.MEDIA_URL,
                               document_root=settings.MEDIA_ROOT)

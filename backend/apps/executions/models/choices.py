@@ -1,7 +1,8 @@
+from apps.executions.constants import ExecutionStatus
 
 status_execution = [
-    ('iniciado',"Iniciado"),
-    ('concluido',"Concluido"),
-    ('erro',"Erro"),
-    ('alerta',"Alerta"),
+    (ExecutionStatus.INICIADO, "Iniciado"),
+    (ExecutionStatus.CONCLUIDO, "Concluido"),
+    (ExecutionStatus.ERRO, "Erro"),
+    (ExecutionStatus.ALERTA, "Alerta"),
 ]

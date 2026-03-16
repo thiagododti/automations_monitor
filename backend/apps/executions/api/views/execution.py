@@ -22,7 +22,7 @@ viewsets.GenericViewSet,
     pass
 
 class ExecutionViewSet(PermissionsExecutionMixin):
-    queryset = Execution.objects.all()
+    queryset = Execution.objects.select_related("automation").all()
     serializer_class = ExecutionSerializer
     filterset_class = ExecutionFilterSet
     permission_classes = [IsAuthenticated]

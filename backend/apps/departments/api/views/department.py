@@ -7,6 +7,7 @@ from apps.departments.models import Department
 from apps.departments.api.serializers import DepartmentSerializer
 from apps.departments.api.filters import DepartmentFilterSet
 
+
 @extend_schema(
     tags=['Departamento'],
     description='Operações de CRUD para Departamento'
@@ -20,8 +21,11 @@ class PermissionsDepartmentMixin(
     # mixins.DestroyModelMixin,
 ):
     pass
+
+
 class DepartmentViewSet(PermissionsDepartmentMixin):
-    queryset = Department.objects.all()
+    queryset = Department.objects.select_related(
+        'updated_by').all()
     serializer_class = DepartmentSerializer
     filterset_class = DepartmentFilterSet
     permission_classes = [IsAuthenticated]

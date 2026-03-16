@@ -24,7 +24,7 @@ class PermissionsStepMixin(
 
 
 class StepViewSet(PermissionsStepMixin):
-    queryset = Step.objects.all()
+    queryset = Step.objects.select_related('execution').all()
     serializer_class = StepSerializer
     filterset_class = StepFilterSet
     permission_classes = [IsAuthenticated]
