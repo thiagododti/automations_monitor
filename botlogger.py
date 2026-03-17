@@ -4,7 +4,7 @@ import requests
 class Botlogger:
     def __init__(self, automation):
         self.automation = automation
-        self.token = "e0f8e9db76dd8ca7525049ce6fa76cb444fa1a19"
+        self.token = "75b833c94dd5d37d69dadd58c6c22db4c087adb4"
         self.execution = None
         self.execution_id = None
         self.etapa = None
