@@ -35,3 +35,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
             'updated_by',
             'updated_by_data'
         ]
+
+
+class DepartmentOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['id', 'name']

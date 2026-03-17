@@ -22,6 +22,19 @@ class Execution(models.Model):
         choices=status_execution,
         max_length=10,
         verbose_name='Status',
+        default=ExecutionStatus.INICIADO
+    )
+    step_counts = models.IntegerField(
+        null=True,
+        blank=True,
+        default=0,
+        verbose_name='Contagem de Etapas',
+    )
+    success_count = models.IntegerField(
+        null=True,
+        blank=True,
+        default=0,
+        verbose_name='Contagem de Sucesso',
     )
 
     def __str__(self):

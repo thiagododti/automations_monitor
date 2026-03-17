@@ -27,12 +27,16 @@ class ExecutionSerializer(serializers.ModelSerializer):
             "date_end",
             "status",
             "automation",
-            "automation_data"
+            "automation_data",
+            "step_counts",
+            "success_count"
         ]
         read_only_fields = [
             "date_start",
             "automation_data",
-            "date_end"
+            "date_end",
+            "step_counts",
+            "success_count"
         ]
 
     def update(self, instance, validated_data):

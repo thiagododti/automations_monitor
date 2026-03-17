@@ -137,10 +137,52 @@ class Botlogger:
 
 
 if __name__ == "__main__":
-    botlogger = Botlogger(automation=1)
-    botlogger.inicio_execucao()
-    botlogger.inicio_etapa("Etapa 1")
-    botlogger.erro_etapa("Erro na etapa 1")
-    botlogger.erro_execucao("Erro na execução")
-    botlogger.fim_etapa()
-    botlogger.fim_execucao()
+    import random
+    import time
+    # quantidade de execuções que você quer simular
+    TOTAL_EXECUCOES = 20
+
+    for _ in range(TOTAL_EXECUCOES):
+
+        automation_id = random.randint(1, 14)
+
+        botlogger = Botlogger(automation=automation_id)
+        botlogger.inicio_execucao()
+
+        total_etapas = random.randint(1, 15)
+
+        todas_falharam = True
+        teve_alerta = False
+
+        for i in range(1, total_etapas + 1):
+
+            botlogger.inicio_etapa(f"Etapa {i}")
+
+            resultado = random.choice(["sucesso", "erro", "alerta"])
+
+            if resultado == "erro":
+                botlogger.erro_etapa(mensagem=f"Erro na etapa {i}")
+
+            elif resultado == "alerta":
+                botlogger.alerta_etapa(mensagem=f"Alerta na etapa {i}")
+                todas_falharam = False
+                teve_alerta = True
+
+            else:
+                botlogger.fim_etapa()
+                todas_falharam = False
+
+            time.sleep(0.2)  # opcional (simular tempo)
+
+        # regra final da execução
+        if todas_falharam:
+            botlogger.erro_execucao(mensagem="Todas as etapas falharam")
+
+        elif teve_alerta:
+            botlogger.alerta_execucao(
+                mensagem="Execução concluída com alertas")
+
+        else:
+            botlogger.fim_execucao()
+
+        time.sleep(0.5)  # opcional
