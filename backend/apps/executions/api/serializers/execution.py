@@ -29,20 +29,30 @@ class ExecutionSerializer(serializers.ModelSerializer):
             "automation",
             "automation_data",
             "step_counts",
-            "success_count"
+            "success_count",
+            "error_count",
+            "time_automation_seconds",
+            "time_manual_seconds",
+            "time_economy_seconds",
+            "cost_economy"
         ]
         read_only_fields = [
             "date_start",
             "automation_data",
             "date_end",
             "step_counts",
-            "success_count"
+            "success_count",
+            "error_count",
+            "time_automation_seconds",
+            "time_manual_seconds",
+            "time_economy_seconds",
+            "cost_economy"
         ]
 
     def update(self, instance, validated_data):
         status = validated_data.get('status', instance.status)
 
-        if status == ExecutionStatus.CONCLUIDO and instance.date_end is None:
+        if status in [ExecutionStatus.CONCLUIDO, ExecutionStatus.ERRO, ExecutionStatus.ALERTA] and instance.date_end is None:
             instance.date_end = timezone.now()
 
         instance.status = status

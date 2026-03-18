@@ -7,12 +7,13 @@ from apps.executions.models import Execution
 from apps.executions.api.serializers import ExecutionSerializer
 from apps.executions.api.filters import ExecutionFilterSet
 
+
 @extend_schema(
     tags=["Execução"],
     description="Operações de CRUD para Execução"
 )
 class PermissionsExecutionMixin(
-viewsets.GenericViewSet,
+    viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -21,11 +22,9 @@ viewsets.GenericViewSet,
 ):
     pass
 
+
 class ExecutionViewSet(PermissionsExecutionMixin):
     queryset = Execution.objects.select_related("automation").all()
     serializer_class = ExecutionSerializer
     filterset_class = ExecutionFilterSet
     permission_classes = [IsAuthenticated]
-
-    
-

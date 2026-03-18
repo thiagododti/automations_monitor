@@ -3,3 +3,4 @@ class ExecutionStatus:
     CONCLUIDO = "concluido"
     ERRO = "erro"
     ALERTA = "alerta"
+    TESTE = "teste"

@@ -26,22 +26,26 @@ class StepSerializer(serializers.ModelSerializer):
             "status",
             "date_start",
             "date_end",
-            "time_execution",
+            "time_automation_seconds",
+            "time_manual_seconds",
+            "time_economy_seconds",
             "execution",
             "execution_data"
 
         ]
         read_only_fields = [
             "date_start",
-            "date_end",  # verificar se vai manter read_only ou automatizar
-            "time_execution",
+            "date_end",
+            "time_automation_seconds",
+            "time_manual_seconds",
+            "time_economy_seconds",
             "execution_data"
         ]
 
     def update(self, instance, validated_data):
         status = validated_data.get('status', instance.status)
 
-        if status in ExecutionStatus.CONCLUIDO and instance.date_end is None:
+        if status in [ExecutionStatus.CONCLUIDO, ExecutionStatus.ALERTA] and instance.date_end is None:
             instance.date_end = timezone.now()
 
         instance.status = status

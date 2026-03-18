@@ -41,9 +41,23 @@ class Automation(models.Model):
         verbose_name='Atualizado por'
     )
     manual_time = models.BigIntegerField(
+        default=0,
         blank=True,
         null=True,
         verbose_name='Tempo Manual (seg)'
+    )
+    execution_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        verbose_name='Custo de Execução',
+        db_comment='Campo para armazenar o custo estimado de execução da automação o custo deve ser calculado com base na etapa da execução'
+    )
+    in_manutention = models.BooleanField(
+        default=True,
+        verbose_name='Em Manutenção',
+        db_comment='Indica se a automação está em manutenção, ou seja, não deve ser executada'
     )
 
     def __str__(self):

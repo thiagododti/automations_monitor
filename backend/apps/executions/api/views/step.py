@@ -45,8 +45,15 @@ class StepViewSet(PermissionsStepMixin):
         step = serializer.save()
 
         if (
-            old_instance.status != ExecutionStatus.CONCLUIDO and step.status == ExecutionStatus.CONCLUIDO
+            step.status in [ExecutionStatus.CONCLUIDO, ExecutionStatus.ALERTA]
+            and old_instance.status != step.status
         ):
             Execution.objects.filter(id=step.execution_id).update(
                 success_count=F('success_count') + 1
+            )
+        elif (
+            step.status == ExecutionStatus.ERRO and old_instance.status != step.status
+        ):
+            Execution.objects.filter(id=step.execution_id).update(
+                error_count=F('error_count') + 1
             )

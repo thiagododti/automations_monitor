@@ -5,4 +5,5 @@ status_execution = [
     (ExecutionStatus.CONCLUIDO, "Concluido"),
     (ExecutionStatus.ERRO, "Erro"),
     (ExecutionStatus.ALERTA, "Alerta"),
+    (ExecutionStatus.TESTE, "Teste"),
 ]
