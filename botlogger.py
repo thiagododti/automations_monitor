@@ -10,7 +10,7 @@ class Botlogger:
 
         # Dados essenciais para o funcionamento do Botlogger
         self.automation = automation
-        self.token = "75b833c94dd5d37d69dadd58c6c22db4c087adb4"
+        self.token = "afa2384709c91a21e519cd585a3a87e234da6698"
         self.execution = None
         self.execution_id = None
         self.etapa = None
