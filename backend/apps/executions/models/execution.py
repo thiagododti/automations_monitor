@@ -7,7 +7,7 @@ from .choices import *
 class Execution(models.Model):
     automation = models.ForeignKey(
         "automations.Automation",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="executions",
         verbose_name='Automação',
     )
@@ -27,49 +27,52 @@ class Execution(models.Model):
         default=ExecutionStatus.INICIADO
     )
     step_counts = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Contagem de Etapas',
     )
     success_count = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Contagem de Sucesso',
     )
     error_count = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
+        blank=True,
         verbose_name='Contagem de Erros',
     )
 
     time_automation_seconds = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Tempo de execução da automação em segundos',
     )
     time_manual_seconds = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Tempo de execução manual em segundos',
     )
     time_economy_seconds = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Tempo economizado em segundos',
     )
     cost_economy = models.DecimalField(
-        null=True,
-        blank=True,
         max_digits=10,
         decimal_places=2,
         verbose_name='Economia de custo',
         default=Decimal('0.00')
+    )
+    potential_time_seconds = models.IntegerField(
+        default=0,
+        verbose_name='Tempo potencial economizado (seg)'
+    )
+    potential_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        verbose_name='Custo potencial economizado'
+    )
+    efficiency_percent = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        verbose_name='Eficiência (%)'
     )
 
     def save(self, *args, **kwargs):

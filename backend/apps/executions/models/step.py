@@ -7,7 +7,7 @@ from decimal import Decimal
 class Step(models.Model):
     execution = models.ForeignKey(
         "executions.Execution",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="steps",
         verbose_name='Execução',
     )
@@ -32,22 +32,32 @@ class Step(models.Model):
         verbose_name='Data de fim',
     )
     time_automation_seconds = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Tempo de execução da automação em segundos',
     )
     time_manual_seconds = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Tempo de execução manual em segundos',
     )
     time_economy_seconds = models.IntegerField(
-        null=True,
-        blank=True,
         default=0,
         verbose_name='Tempo de economia em segundos',
+    )
+    potential_time_seconds = models.IntegerField(
+        default=0,
+        verbose_name='Tempo potencial economizado (seg)'
+    )
+    potential_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        verbose_name='Custo potencial economizado'
+    )
+    efficiency_percent = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        verbose_name='Eficiência (%)'
     )
 
     def update_execution_totals(self):
@@ -55,16 +65,21 @@ class Step(models.Model):
         from decimal import Decimal
 
         execution = self.execution
+        completed_steps = execution.steps.filter(date_end__isnull=False)
 
-        totals = execution.steps.aggregate(
+        totals = completed_steps.aggregate(
             total_automation=Sum('time_automation_seconds'),
             total_manual=Sum('time_manual_seconds'),
             total_economy=Sum('time_economy_seconds'),
+            total_potential_time=Sum('potential_time_seconds'),
+            total_potential_cost=Sum('potential_cost'),
         )
 
         execution.time_automation_seconds = totals['total_automation'] or 0
         execution.time_manual_seconds = totals['total_manual'] or 0
         execution.time_economy_seconds = totals['total_economy'] or 0
+        execution.potential_time_seconds = totals['total_potential_time'] or 0
+        execution.potential_cost = totals['total_potential_cost'] or 0
 
         # 🔥 custo
         if execution.automation and execution.automation.execution_cost:
@@ -74,11 +89,23 @@ class Step(models.Model):
         else:
             execution.cost_economy = Decimal('0.00')
 
+        # eficiência geral
+        if totals['total_automation']:
+            execution.efficiency_percent = (
+                Decimal(totals['total_manual']) /
+                Decimal(totals['total_automation'])
+            ) * 100
+        else:
+            execution.efficiency_percent = Decimal('0.00')
+
         execution.save(update_fields=[
             'time_automation_seconds',
             'time_manual_seconds',
             'time_economy_seconds',
             'cost_economy',
+            'potential_time_seconds',
+            'potential_cost',
+            'efficiency_percent',
         ])
 
     def save(self, *args, **kwargs):
@@ -104,6 +131,28 @@ class Step(models.Model):
 
             if self.time_economy_seconds < 0:
                 self.time_economy_seconds = 0
+
+        # potencial (sempre 100% do manual)
+        if self.date_end:
+            self.potential_time_seconds = self.time_manual_seconds or 0
+
+            if self.execution.automation.execution_cost:
+                self.potential_cost = (
+                    Decimal(self.potential_time_seconds) / Decimal(3600)
+                ) * self.execution.automation.execution_cost
+        else:
+            self.potential_time_seconds = 0
+            self.potential_cost = Decimal('0.00')
+
+        # eficiência
+        if self.date_end and self.time_automation_seconds > 0:
+            self.efficiency_percent = (
+                Decimal(self.time_manual_seconds) /
+                Decimal(self.time_automation_seconds)
+            ) * 100
+        else:
+            self.efficiency_percent = Decimal('0.00')
+
         old_instance = None
         if self.pk:
             old_instance = Step.objects.filter(pk=self.pk).first()

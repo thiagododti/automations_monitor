@@ -1,10 +1,11 @@
 from django.db import models
 from .choices import *
 
+
 class Log(models.Model):
     execution = models.ForeignKey(
         "executions.Execution",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="logs",
         verbose_name='Execução',
     )
@@ -28,4 +29,3 @@ class Log(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Log'
         verbose_name_plural = 'Logs'
-

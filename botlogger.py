@@ -241,7 +241,7 @@ def teste():
     import random
     import time
     # quantidade de execuções que você quer simular
-    TOTAL_EXECUCOES = 20
+    TOTAL_EXECUCOES = 1
 
     for _ in range(TOTAL_EXECUCOES):
 
