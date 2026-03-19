@@ -47,6 +47,15 @@ class Automation(models.Model):
         null=True,
         verbose_name='Tempo Manual (seg)'
     )
+    position = models.ForeignKey(
+        'positions.Position',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='automations',
+        verbose_name='Cargo',
+        db_comment='Campo para armazenar o cargo associado à automação, o cargo deve ser utilizado para calcular o custo de execução da automação com base no custo por hora do cargo e no tempo estimado de execução da automação'
+    )
     execution_cost = models.DecimalField(
         max_digits=10,
         decimal_places=2,

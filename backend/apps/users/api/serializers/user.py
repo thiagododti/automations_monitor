@@ -100,7 +100,7 @@ class UserSerializer(UserReadSerializer):
         return instance
 
     @staticmethod
-    def validate_foto(self, value):
+    def validate_foto(value):
         max_size = 2 * 1024 * 1024  # 2MB
         if value.size > max_size:
             raise serializers.ValidationError(

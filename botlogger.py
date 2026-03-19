@@ -279,7 +279,7 @@ def executar_automacao(automation_id):
 
 
 def teste():
-    TOTAL_SIMULTANEAS = 6  # exemplo
+    TOTAL_SIMULTANEAS = 7  # exemplo
 
     with ThreadPoolExecutor(max_workers=TOTAL_SIMULTANEAS) as executor:
         futures = [
@@ -300,11 +300,32 @@ def teste_erro():
 
 
 def teste_alerta():
+    # Instancia no inicio da automaçao
     botlogger = Botlogger(automation=1)
     botlogger.inicio_execucao()
-    botlogger.inicio_etapa("Etapa 1")
-    botlogger.alerta_etapa(mensagem="Alerta na etapa 1")
+
+    documentos = 100
+    for documento in range(documentos):
+        # inicia a etapa
+        botlogger.inicio_etapa(f"Etapa {documento + 1}")
+
+        ###################################################
+        # executa a lógica da etapa (simulada por sleep)  #
+        ###################################################
+
+        # finaliza a etapa
+        botlogger.fim_etapa()
+        botlogger.alerta_etapa(mensagem=f"Alerta na etapa {documento + 1}")
+
+        # ou, se tivesse um erro:
+        botlogger.erro_etapa(mensagem=f"Erro na etapa {documento + 1}")
+
+    # fim da execução
+    botlogger.fim_execucao()
     botlogger.alerta_execucao(mensagem="Alerta na execução")
+
+    # ou, se tivesse um erro:
+    botlogger.erro_execucao(mensagem="Erro na execução")
 
 
 if __name__ == "__main__":

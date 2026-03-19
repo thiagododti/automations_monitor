@@ -28,7 +28,9 @@ LOCAL_APPS = [
     'apps.users.apps.UsersConfig',
     'apps.automations.apps.AutomationsConfig',
     'apps.executions.apps.ExecutionsConfig',
-    'apps.departments.apps.DepartmentsConfig'
+    'apps.departments.apps.DepartmentsConfig',
+    'apps.business.apps.BusinessConfig',
+    'apps.positions.apps.PositionsConfig',
 ]
 
 OTHERS_APPS = [
@@ -40,6 +42,7 @@ OTHERS_APPS = [
     "corsheaders",
     "silk",
     "simple_history",
+
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + OTHERS_APPS
