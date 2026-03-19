@@ -23,7 +23,7 @@ class UserSerializerTest(TestCase):
 
         payload = {
             "username": "new_user",
-            "password": "12345678",
+            "password": "S3nha#F0rte2026",
             "email": "new@test.com",
             "first_name": "New",
             "last_name": "User"
@@ -32,6 +32,26 @@ class UserSerializerTest(TestCase):
         serializer = UserSerializer(data=payload)
 
         self.assertTrue(serializer.is_valid())
+        user = serializer.save()
+        self.assertTrue(user.check_password(payload["password"]))
+
+    def test_user_serializer_update_password_hash(self):
+
+        user = UserFactory.create()
+
+        payload = {
+            "password": "N0va#S3nhaForte2026"
+        }
+
+        serializer = UserSerializer(
+            instance=user,
+            data=payload,
+            partial=True
+        )
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated_user = serializer.save()
+        self.assertTrue(updated_user.check_password(payload["password"]))
 
     def test_password_required_on_create(self):
 

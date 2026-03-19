@@ -38,7 +38,8 @@ OTHERS_APPS = [
     'drf_spectacular',  # para swagger UI
     'django_filters',
     "corsheaders",
-    "silk"
+    "silk",
+    "simple_history",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + OTHERS_APPS
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'silk.middleware.SilkyMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

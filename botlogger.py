@@ -1,6 +1,8 @@
 import requests
 import time
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+import random
 
 
 class Botlogger:
@@ -237,56 +239,56 @@ class Botlogger:
         print(f"Etapa com alerta: {self.etapa_id}")
 
 
-def teste():
-    import random
-    import time
-    # quantidade de execuções que você quer simular
-    TOTAL_EXECUCOES = 1
+def executar_automacao(automation_id):
+    botlogger = Botlogger(automation=automation_id)
+    botlogger.inicio_execucao()
 
-    for _ in range(TOTAL_EXECUCOES):
+    total_etapas = random.randint(1, 15)
 
-        automation_id = random.randint(1, 4)
+    todas_falharam = True
+    teve_alerta = False
 
-        botlogger = Botlogger(automation=automation_id)
-        botlogger.inicio_execucao()
+    for i in range(1, total_etapas + 1):
+        botlogger.inicio_etapa(f"Etapa {i}")
+        time.sleep(random.uniform(15, 70))  # Simula tempo de execução da etapa
+        resultado = random.choice(["sucesso", "erro", "alerta"])
 
-        total_etapas = random.randint(1, 15)
+        if resultado == "erro":
+            botlogger.erro_etapa(mensagem=f"Erro na etapa {i}")
 
-        todas_falharam = True
-        teve_alerta = False
-
-        for i in range(1, total_etapas + 1):
-
-            botlogger.inicio_etapa(f"Etapa {i}")
-
-            resultado = random.choice(["sucesso", "erro", "alerta"])
-
-            if resultado == "erro":
-                botlogger.erro_etapa(mensagem=f"Erro na etapa {i}")
-
-            elif resultado == "alerta":
-                botlogger.alerta_etapa(mensagem=f"Alerta na etapa {i}")
-                todas_falharam = False
-                teve_alerta = True
-
-            else:
-                botlogger.fim_etapa()
-                todas_falharam = False
-
-            time.sleep(0.2)  # opcional (simular tempo)
-
-        # regra final da execução
-        if todas_falharam:
-            botlogger.erro_execucao(mensagem="Todas as etapas falharam")
-
-        elif teve_alerta:
-            botlogger.alerta_execucao(
-                mensagem="Execução concluída com alertas")
+        elif resultado == "alerta":
+            botlogger.alerta_etapa(mensagem=f"Alerta na etapa {i}")
+            todas_falharam = False
+            teve_alerta = True
 
         else:
-            botlogger.fim_execucao()
+            botlogger.fim_etapa()
+            todas_falharam = False
 
-        time.sleep(0.5)  # opcional
+    if todas_falharam:
+        botlogger.erro_execucao(mensagem="Todas as etapas falharam")
+
+    elif teve_alerta:
+        botlogger.alerta_execucao(
+            mensagem="Execução concluída com alertas")
+
+    else:
+        botlogger.fim_execucao()
+
+    time.sleep(0.5)
+
+
+def teste():
+    TOTAL_SIMULTANEAS = 6  # exemplo
+
+    with ThreadPoolExecutor(max_workers=TOTAL_SIMULTANEAS) as executor:
+        futures = [
+            executor.submit(executar_automacao, automation_id)
+            for automation_id in range(1, TOTAL_SIMULTANEAS + 1)
+        ]
+
+        for future in futures:
+            future.result()
 
 
 def teste_erro():

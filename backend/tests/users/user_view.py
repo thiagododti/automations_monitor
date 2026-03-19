@@ -1,5 +1,6 @@
 from django.urls import reverse
 from rest_framework import status
+from apps.users.models import User
 
 from tests.base_api_test import BaseAPITestCase
 from tests.factories.user_factory import UserFactory
@@ -38,7 +39,7 @@ class UserViewSetTest(BaseAPITestCase):
 
         payload = {
             "username": "created_user",
-            "password": "12345678",
+            "password": "S3nha#F0rte2026",
             "email": "created@test.com",
             "first_name": "Created",
             "last_name": "User"
@@ -47,6 +48,8 @@ class UserViewSetTest(BaseAPITestCase):
         response = self.client.post(self.list_url, payload)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_user = User.objects.get(username=payload["username"])
+        self.assertTrue(created_user.check_password(payload["password"]))
 
     def test_update_user(self):
 

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from apps.users.models import User
 from apps.departments.models import Department
+from django.contrib.auth.password_validation import validate_password
 
 
 class DepartmentUserSerializer(serializers.ModelSerializer):
@@ -69,6 +70,10 @@ class UserSerializer(UserReadSerializer):
     class Meta(UserReadSerializer.Meta):
         fields = UserReadSerializer.Meta.fields + ['password']
 
+    def validate_password(self, value):
+        validate_password(value, self.instance)
+        return value
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance:
@@ -77,6 +82,22 @@ class UserSerializer(UserReadSerializer):
         else:
             # Criação: senha é obrigatória
             self.fields['password'].required = True
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        return User.objects.create_user(password=password, **validated_data)
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
 
     @staticmethod
     def validate_foto(self, value):

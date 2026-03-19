@@ -34,7 +34,11 @@ class ExecutionSerializer(serializers.ModelSerializer):
             "time_automation_seconds",
             "time_manual_seconds",
             "time_economy_seconds",
-            "cost_economy"
+            "cost_economy",
+            "potential_time_seconds",
+            "potential_cost",
+            "efficiency_percent"
+
         ]
         read_only_fields = [
             "date_start",
@@ -46,7 +50,10 @@ class ExecutionSerializer(serializers.ModelSerializer):
             "time_automation_seconds",
             "time_manual_seconds",
             "time_economy_seconds",
-            "cost_economy"
+            "cost_economy",
+            "potential_time_seconds",
+            "potential_cost",
+            "efficiency_percent"
         ]
 
     def update(self, instance, validated_data):

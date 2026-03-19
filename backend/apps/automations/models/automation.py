@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from simple_history.models import HistoricalRecords
 
 
 class Automation(models.Model):
@@ -59,6 +60,8 @@ class Automation(models.Model):
         verbose_name='Em Manutenção',
         db_comment='Indica se a automação está em manutenção, ou seja, não deve ser executada'
     )
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name

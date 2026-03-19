@@ -29,6 +29,9 @@ class StepSerializer(serializers.ModelSerializer):
             "time_automation_seconds",
             "time_manual_seconds",
             "time_economy_seconds",
+            "potential_time_seconds",
+            "potential_cost",
+            "efficiency_percent",
             "execution",
             "execution_data"
 
@@ -39,6 +42,9 @@ class StepSerializer(serializers.ModelSerializer):
             "time_automation_seconds",
             "time_manual_seconds",
             "time_economy_seconds",
+            "potential_time_seconds",
+            "potential_cost",
+            "efficiency_percent",
             "execution_data"
         ]
 
