@@ -245,7 +245,7 @@ def teste():
 
     for _ in range(TOTAL_EXECUCOES):
 
-        automation_id = random.randint(1, 3)
+        automation_id = random.randint(1, 4)
 
         botlogger = Botlogger(automation=automation_id)
         botlogger.inicio_execucao()
