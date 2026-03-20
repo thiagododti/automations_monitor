@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from apps.business.models import Business
 from apps.executions.models import Execution
 from apps.automations.models import Automation
 from apps.executions.constants import ExecutionStatus
@@ -14,10 +16,20 @@ class AutomationExecutionSerializer(serializers.ModelSerializer):
             "is_active"
         ]
 
+class BusinessExecutionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Business
+        fields = [
+            "name",
+            "cnpj",
+            "logo"
+        ]
+
 
 class ExecutionSerializer(serializers.ModelSerializer):
     automation_data = AutomationExecutionSerializer(
         read_only=True, source="automation")
+    business_data = BusinessExecutionSerializer(read_only=True, source="business")
 
     class Meta:
         model = Execution
@@ -28,6 +40,8 @@ class ExecutionSerializer(serializers.ModelSerializer):
             "status",
             "automation",
             "automation_data",
+            "business",
+            "business_data",
             "step_counts",
             "success_count",
             "error_count",
@@ -47,6 +61,7 @@ class ExecutionSerializer(serializers.ModelSerializer):
             "step_counts",
             "success_count",
             "error_count",
+            "business_data",
             "time_automation_seconds",
             "time_manual_seconds",
             "time_economy_seconds",

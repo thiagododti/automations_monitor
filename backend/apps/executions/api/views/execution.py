@@ -24,7 +24,7 @@ class PermissionsExecutionMixin(
 
 
 class ExecutionViewSet(PermissionsExecutionMixin):
-    queryset = Execution.objects.select_related("automation").all()
+    queryset = Execution.objects.select_related("automation","business").all()
     serializer_class = ExecutionSerializer
     filterset_class = ExecutionFilter
     permission_classes = [IsAuthenticated]

@@ -21,6 +21,12 @@ class Business(models.Model):
         null=True,
         verbose_name="Logo do Negócio"
     )
+    certificado = models.FileField(
+        upload_to='business_certificados/',
+        blank=True,
+        null=True,
+        verbose_name="Certificado Digital"
+    )
     description = models.TextField(
         blank=True,
         null=True,
@@ -42,6 +48,42 @@ class Business(models.Model):
         related_name="updated_businesses",
         verbose_name="Atualizado por"
     )
+    # Colunas para gerenciar os dados dos certificados digitais!
+    certificate_expire = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    subject_cn = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    subject_c = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    subject_o = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    issuer_cn = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    issuer_c = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    issuer_o = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+
 
     def __str__(self):
         return self.name

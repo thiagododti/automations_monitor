@@ -39,7 +39,7 @@ OTHERS_APPS = [
     'rest_framework.authtoken',
     'drf_spectacular',  # para swagger UI
     'django_filters',
-    "corsheaders",
+    # "corsheaders", Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
     "silk",
     "simple_history",
 
@@ -50,7 +50,7 @@ INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + OTHERS_APPS
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware', sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -134,7 +134,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         "rest_framework.authentication.TokenAuthentication",
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication', Sem necessidade de usar a autenticação de sessão, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -203,12 +203,16 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
+    CSRF_TRUSTED_ORIGINS = [
+        "https://localhost",
+    ]
+
 
 # configurações de CORS
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+# CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
 
 # Se você precisar enviar cookies / credenciais:
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS = True Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
 
 # (opcional) Métodos e headers permitidos — geralmente os defaults já cobrem:
 CORS_ALLOW_METHODS = [

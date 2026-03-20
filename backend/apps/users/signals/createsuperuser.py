@@ -10,6 +10,7 @@ User = get_user_model()
 def create_superuser(sender, **kwargs):
     if not settings.TESTING:
         if not User.objects.filter(username="admin").exists():
+            print("Iniciando a criação de superuser padrão por Signal, caso deseje remover essa ação remova do arquivo /apps/users/apps a ação do signal!")
             user = User.objects.create_superuser(
                 username="admin",
                 email="admin@email.com",

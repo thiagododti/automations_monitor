@@ -5,6 +5,7 @@ class UsersConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = 'apps.users'
 
+    # Signals de criação após migrações.
     def ready(self):
         import apps.users.signals.createsuperuser
         import apps.users.signals.automationuser

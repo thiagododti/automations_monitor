@@ -54,7 +54,12 @@ class Execution(models.Model):
         verbose_name='Contagem de Erros das etapas',
         db_comment="Contagem de Erros das etapas"
     )
-
+    business = models.ForeignKey(
+        'business.Business',
+        on_delete=models.PROTECT,
+        related_name='executions',
+        verbose_name='Empresa'
+    )
     time_automation_seconds = models.IntegerField(
         default=0,
         verbose_name='Tempo de execução da automação em segundos',

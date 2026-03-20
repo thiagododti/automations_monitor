@@ -1,16 +1,16 @@
 services:
-  db:
-    container_name: db
-    image: postgres:16
-    env_file:
-      - .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-    restart: unless-stopped
-    networks:
-      - app_network
+  # db:
+  #   container_name: db
+  #   image: postgres:16
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /etc/timezone:/etc/timezone:ro
+  #   restart: unless-stopped
+  #   networks:
+  #     - app_network
 
 
   backend:
@@ -21,17 +21,8 @@ services:
     volumes:
       - media_data:/vol/web/media
       - log_data:/vol/web/logs
-    depends_on:
-      - db
-    command:
-      [
-        "gunicorn",
-        "config.wsgi:application",
-        "--bind","0.0.0.0:3000",
-        "--workers","3",
-        "--threads","3",
-        "--timeout","60"
-      ]
+    # depends_on:
+    #   - db
     restart: unless-stopped
     networks:
       - app_network
@@ -56,7 +47,7 @@ services:
 
 
 volumes:
-  postgres_data:
+  # postgres_data:
   media_data:
   log_data:
   certificates_data:

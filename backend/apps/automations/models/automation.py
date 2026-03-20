@@ -58,6 +58,18 @@ class Automation(models.Model):
         verbose_name='Em Manutenção',
         db_comment='Indica se a automação está em manutenção, ou seja, não deve ser executada'
     )
+    auth_certificate = models.BooleanField(
+        default=True,
+        verbose_name="Autentica com Certificado?",
+        db_comment='Autentica com Certificado?',
+
+    )
+    url_certificate = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name='Url de troca de certificado',
+        db_comment="Url usada para efetuar a autenticação de certificados automaticamente."
+    )
 
     history = HistoricalRecords()
 

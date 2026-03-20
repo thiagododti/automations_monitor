@@ -10,6 +10,7 @@ User = get_user_model()
 def create_automation_user(sender, **kwargs):
     if not settings.TESTING:
         if not User.objects.filter(username="automation").exists():
+            print("Iniciando a criação de usuario de automações padrão por Signal, caso deseje remover essa ação remova do arquivo /apps/users/apps a ação do signal!")
             user = User.objects.create_user(
                 username="automation",
                 email="automation@email.com",

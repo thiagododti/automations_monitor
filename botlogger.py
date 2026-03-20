@@ -3,28 +3,48 @@ import time
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import random
+import winreg
 
 
 class Botlogger:
-    def __init__(self, automation):
-        # Em ambiente de desenvolvimento, evita enviar mensagens para o Bitrix24
-        self.em_implementacao = True
 
-        # Dados essenciais para o funcionamento do Botlogger
-        self.automation = automation
+    def __init__(self, automacao, empresa:str ):
+        # Recebimento de parametros
+        self.automation_id = automacao
+        self.empresa = empresa
+        # URL base e headers comuns para todas as requisições
         self.token = "afa2384709c91a21e519cd585a3a87e234da6698"
-        self.execution = None
-        self.execution_id = None
-        self.etapa = None
-        self.etapa_id = None
         self.url = "http://localhost:8081"
         self.headers = {"Authorization": f"Token {self.token}"}
 
+        self.automation_url = f"{self.url}/api/automations/{{id}}/"
         self.execution_url = f"{self.url}/api/executions/"
         self.patch_execution_url = f"{self.url}/api/executions/{{id}}/"
         self.step_url = f"{self.url}/api/executions/steps/"
         self.patch_step_url = f"{self.url}/api/executions/steps/{{id}}/"
         self.log_url = f"{self.url}/api/executions/logs/"
+        self.business_url = f"{self.url}/api/business/"
+
+        # Em ambiente de desenvolvimento, evita enviar mensagens para o Bitrix24
+        self.em_implementacao = True
+        self.business = None
+        self.business_id = None
+        # Dados essenciais para o funcionamento do Botlogger
+
+        self.automation = None
+
+        self.execution = None
+        self.execution_id = None
+        self.etapa = None
+        self.etapa_id = None
+
+        # busca e empresa
+        self.get_empresa()
+        self.get_automation()
+
+        if self.automation and self.automation['auth_certificate']:
+            self.troca_certificado()
+
 
     def _safe_request(self, method, url, retries=3, backoff=1, **kwargs):
         for attempt in range(retries):
@@ -103,10 +123,118 @@ class Botlogger:
         log = self._safe_json(response)
         print(f"Log registrado: {log.get('id')}")
 
+    def get_empresa(self):
+        params = {
+            "cnpj": self.empresa
+        }
+        response = self._safe_request(
+            "GET",
+            self.business_url,
+            headers=self.headers,
+            params= params
+        )
+
+        results = self._safe_json(response)
+
+        self.business = results.get("results")
+
+        if not results:
+            raise ValueError("Nenhum business encontrado para os parâmetros informados")
+
+        self.business_id = self.business[0].get("id")
+
+        if not self.business_id:
+            raise ValueError("Business encontrado, mas sem ID válido")
+
+    def get_automation(self):
+
+        response = self._safe_request(
+            "GET",
+            self.automation_url.format(id=self.automation_id),
+            headers=self.headers,
+
+        )
+
+        self.automation = self._safe_json(response)
+
+        if not self.automation:
+            raise ValueError("Nenhuma automação encontrada para os parâmetros informados")
+
+    def update_string_value(self, name: str, value: str, path: str):
+        try:
+            with winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE,
+                    path,
+                    0,
+                    winreg.KEY_SET_VALUE
+            ) as key:
+                winreg.SetValueEx(key, name, 0, winreg.REG_SZ, value)
+
+        except PermissionError:
+            raise PermissionError(
+                "Permissão negada ao acessar o registro. Execute como administrador."
+            )
+
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Caminho do registro não encontrado: {path}"
+            )
+
+        except Exception as e:
+            raise RuntimeError(
+                f"Erro ao atualizar registro: {str(e)}"
+            )
+
+    def troca_certificado(self):
+        path = r'SOFTWARE\Policies\Google\Chrome\AutoSelectCertificateForUrls'
+        name = '1'
+
+        # URL vem da automação
+        url = self.automation.get("url_certificate")
+
+        if not url:
+            raise ValueError("A automação não possui 'url_certificate'.")
+
+        # Considerando que você vai usar o primeiro business
+        if not self.business or not isinstance(self.business, list):
+            raise ValueError("Nenhum business informado.")
+
+        business = self.business[0]
+
+        # Validação dos campos obrigatórios
+        required_fields = [
+            "subject_cn", "subject_c", "subject_o",
+            "issuer_cn", "issuer_c", "issuer_o"
+        ]
+
+        for field in required_fields:
+            if not business.get(field):
+                raise ValueError(f"Campo obrigatório ausente no business: {field}")
+
+        json_data = {
+            "pattern": url,
+            "filter": {
+                "ISSUER": {
+                    "CN": business["issuer_cn"],
+                    "C": business["issuer_c"],
+                    "O": business["issuer_o"],
+                },
+                "SUBJECT": {
+                    "CN": business["subject_cn"],
+                    "C": business["subject_c"],
+                    "O": business["subject_o"],
+                }
+            }
+        }
+
+        import json
+        self.UpdateStringValue(name, json.dumps(json_data), path)
+
     def inicio_execucao(self):
         data = {
             "status": "iniciado",
-            "automation": self.automation
+            "automation": self.automation,
+            "business": self.business_id
         }
 
         response = self._safe_request(
@@ -240,6 +368,7 @@ class Botlogger:
 
 
 def executar_automacao(automation_id):
+
     botlogger = Botlogger(automation=automation_id)
     botlogger.inicio_execucao()
 
@@ -329,6 +458,8 @@ def teste_alerta():
 
 
 if __name__ == "__main__":
-    teste()
+    #teste()
     #teste_erro()
     # teste_alerta()
+
+    botlogger = Botlogger(automacao=1,empresa='08880518000179')

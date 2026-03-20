@@ -47,7 +47,8 @@ class AutomationSerializer(serializers.ModelSerializer):
             'in_manutention',
             "position",
             "position_data",
-
+            "auth_certificate",
+            "url_certificate"
         ]
         read_only_fields = [
             'created_at',
