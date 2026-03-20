@@ -8,12 +8,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(dotenv_path='stack.env')
 
+
+def get_env_list(name, default=None):
+    value = os.getenv(name)
+    if value is None:
+        return list(default or [])
+    return [item.strip() for item in value.split(',') if item.strip()]
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 TESTING = os.getenv('TESTING', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = get_env_list('ALLOWED_HOSTS', ['localhost', '127.0.0.1'])
 
 
 DJANGO_APPS = [
@@ -204,9 +211,10 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-    CSRF_TRUSTED_ORIGINS = [
-        "https://localhost",
-    ]
+    CSRF_TRUSTED_ORIGINS = get_env_list(
+        'CSRF_TRUSTED_ORIGINS',
+        ['https://localhost', 'https://127.0.0.1']
+    )
 
 
 # configurações de CORS

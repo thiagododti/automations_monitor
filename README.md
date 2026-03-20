@@ -90,7 +90,8 @@ Edite o arquivo `.env` com suas configurações:
 # Django
 SECRET_KEY=your-secret-key-here
 DEBUG=False
-ALLOWED_HOSTS=localhost,127.0.0.1,seu-dominio.com
+ALLOWED_HOSTS=localhost,127.0.0.1,192.168.74.10,seu-dominio.com
+CSRF_TRUSTED_ORIGINS=https://192.168.74.10,https://seu-dominio.com
 
 # Database
 POSTGRES_DB=automations_monitor
@@ -117,9 +118,9 @@ docker-compose exec backend python manage.py createsuperuser
 ```
 
 #### 5. Acesse a aplicação
-- **API**: `http://localhost/api/`
-- **Swagger**: `http://localhost/api/schema/swagger-ui/`
-- **ReDoc**: `http://localhost/api/schema/redoc/`
+- **API**: `https://SEU_HOST_OU_IP/api/`
+- **Swagger**: `https://SEU_HOST_OU_IP/docs/`
+- **Schema**: `https://SEU_HOST_OU_IP/schema/`
 
 ### Opção 2: Instalação Local
 
@@ -190,7 +191,8 @@ Acesse `http://localhost:8000/api/`
 |----------|-----------|---------|
 | `SECRET_KEY` | Chave secreta do Django (gere uma segura) | `django-insecure-...` |
 | `DEBUG` | Modo debug (sempre `False` em produção) | `False` |
-| `ALLOWED_HOSTS` | Hosts permitidos (separados por vírgula) | `localhost,api.exemplo.com` |
+| `ALLOWED_HOSTS` | Hosts permitidos (separados por vírgula) | `localhost,127.0.0.1,192.168.74.10,api.exemplo.com` |
+| `CSRF_TRUSTED_ORIGINS` | Origens HTTPS confiáveis para POST/PUT/PATCH/DELETE | `https://192.168.74.10,https://app.exemplo.com` |
 | `POSTGRES_PASSWORD` | Senha do PostgreSQL | `senha-segura-aqui` |
 | `CORS_ALLOWED_ORIGINS` | Origens CORS permitidas | `http://localhost:3000` |
 
@@ -315,6 +317,7 @@ docker-compose build --no-cache
 - ✅ Configure `DEBUG=False`
 - ✅ Gere uma `SECRET_KEY` segura
 - ✅ Configure `ALLOWED_HOSTS` corretamente
+- ✅ Configure `CSRF_TRUSTED_ORIGINS` com o IP/domínio HTTPS publicado
 - ✅ Use HTTPS com certificados válidos
 - ✅ Configure postgres com senha forte
 - ✅ Restrinja CORS apenas para domínios confiáveis
