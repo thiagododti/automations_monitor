@@ -12,18 +12,17 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY entrypoint.sh /app/entrypoint.sh
+COPY backend/entrypoint.sh /app/backend/entrypoint.sh
 
 COPY . .
 
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/backend/entrypoint.sh
 
 RUN mkdir -p /vol/web/media /vol/web/logs
 
-ENTRYPOINT ["/app/entrypoint.sh"]
-
+ENTRYPOINT ["/app/backend/entrypoint.sh"]
 
 CMD ["gunicorn","config.wsgi:application","--bind","0.0.0.0:3000","--workers","10","--threads","10","--timeout","60"]
