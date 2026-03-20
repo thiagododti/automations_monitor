@@ -16,8 +16,8 @@ services:
   backend:
     container_name: backend
     build: ./backend
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     volumes:
       - media_data:/vol/web/media
       - log_data:/vol/web/logs
