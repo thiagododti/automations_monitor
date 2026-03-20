@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.executions.models import Log
 from apps.executions.api.serializers import LogSerializer
-from apps.executions.api.filters import LogFilterSet
+from apps.executions.api.filters import LogFilter
 
 
 @extend_schema(
@@ -26,7 +26,7 @@ class PermissionsLogMixin(
 class LogViewSet(PermissionsLogMixin):
     queryset = Log.objects.select_related('execution').all()
     serializer_class = LogSerializer
-    filterset_class = LogFilterSet
+    filterset_class = LogFilter
     permission_classes = [IsAuthenticated]
 
 

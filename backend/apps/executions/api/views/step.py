@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.executions.models import Step
 from apps.executions.api.serializers import StepSerializer
-from apps.executions.api.filters import StepFilterSet
+from apps.executions.api.filters import StepFilter
 from django.db.models import F
 
 
@@ -27,7 +27,7 @@ class PermissionsStepMixin(
 class StepViewSet(PermissionsStepMixin):
     queryset = Step.objects.select_related('execution').all()
     serializer_class = StepSerializer
-    filterset_class = StepFilterSet
+    filterset_class = StepFilter
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):

@@ -2,7 +2,7 @@ import django_filters
 from apps.business.models import Business
 
 
-class BusinessFilterSet(django_filters.FilterSet):
+class BusinessFilter(django_filters.FilterSet):
     id = django_filters.NumberFilter(
         field_name='id', lookup_expr='exact', label='ID'
     )

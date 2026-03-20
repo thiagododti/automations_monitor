@@ -2,6 +2,7 @@ from rest_framework import serializers
 from apps.automations.models import Automation
 from apps.departments.models import Department
 from apps.users.models import User
+from apps.positions.api.serializers import PositionSerializer
 
 
 class UserSerializerAutomations(serializers.ModelSerializer):
@@ -27,6 +28,7 @@ class AutomationSerializer(serializers.ModelSerializer):
         source='updated_by', read_only=True)
     department_data = DepartmentSerializerAutomations(
         source='department', read_only=True)
+    position_data = PositionSerializer(source='position', read_only=True)
 
     class Meta:
         model = Automation
@@ -42,8 +44,9 @@ class AutomationSerializer(serializers.ModelSerializer):
             'department',
             'department_data',
             'manual_time',
-            'execution_cost',
             'in_manutention',
+            "position",
+            "position_data",
 
         ]
         read_only_fields = [
@@ -51,5 +54,6 @@ class AutomationSerializer(serializers.ModelSerializer):
             'updated_at',
             'updated_by',
             'updated_by_data',
-            'department_data'
+            'department_data',
+            "position_data",
         ]

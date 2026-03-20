@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from apps.users.models import User
 from apps.users.api.serializers import UserSerializer, UserReadSerializer
-from apps.users.api.filters import UserFilterSet
+from apps.users.api.filters import UserFilter
 from drf_spectacular.utils import extend_schema
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -31,7 +31,7 @@ class UserViewSet(PermissionsUserMixin):
     permission_classes = [IsAuthenticated]
     # opcional, se você usar TokenAuth
     # authentication_classes = [JWTAuthentication]
-    filterset_class = UserFilterSet
+    filterset_class = UserFilter
     parser_classes = [MultiPartParser]
 
     def perform_create(self, serializer):

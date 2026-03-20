@@ -7,7 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.departments.models import Department
 from apps.departments.api.serializers import DepartmentSerializer, DepartmentOptionSerializer
-from apps.departments.api.filters import DepartmentFilterSet
+from apps.departments.api.filters import DepartmentFilter
 
 
 @extend_schema(
@@ -29,7 +29,7 @@ class DepartmentViewSet(PermissionsDepartmentMixin):
     queryset = Department.objects.select_related(
         'updated_by').all()
     serializer_class = DepartmentSerializer
-    filterset_class = DepartmentFilterSet
+    filterset_class = DepartmentFilter
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):

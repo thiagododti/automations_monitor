@@ -7,7 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.business.models import Business
 from apps.business.api.serializers import BusinessSerializer, BusinessOptionSerializer
-from apps.business.api.filters import BusinessFilterSet
+from apps.business.api.filters import BusinessFilter
 
 
 @extend_schema(
@@ -28,7 +28,7 @@ class PermissionsBusinessMixin(
 class BusinessViewSet(PermissionsBusinessMixin):
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
-    filterset_class = BusinessFilterSet
+    filterset_class = BusinessFilter
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):

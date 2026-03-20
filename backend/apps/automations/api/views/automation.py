@@ -7,7 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.automations.models import Automation
 from apps.automations.api.serializers import AutomationSerializer, AutomationStatusSerializer
-from apps.automations.api.filters import AutomationFilterSet
+from apps.automations.api.filters import AutomationFilter
 
 
 @extend_schema(
@@ -27,9 +27,9 @@ class PermissionsAutomationMixin(
 
 class AutomationViewSet(PermissionsAutomationMixin):
     queryset = Automation.objects.select_related(
-        'updated_by', 'department').all()
+        'updated_by', 'department','position').all()
     serializer_class = AutomationSerializer
-    filterset_class = AutomationFilterSet
+    filterset_class = AutomationFilter
     permission_classes = [IsAuthenticated]
     # authentication_classes = [JWTAuthentication]
 

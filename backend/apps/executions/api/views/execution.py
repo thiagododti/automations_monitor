@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.executions.models import Execution
 from apps.executions.api.serializers import ExecutionSerializer
-from apps.executions.api.filters import ExecutionFilterSet
+from apps.executions.api.filters import ExecutionFilter
 
 
 @extend_schema(
@@ -26,5 +26,5 @@ class PermissionsExecutionMixin(
 class ExecutionViewSet(PermissionsExecutionMixin):
     queryset = Execution.objects.select_related("automation").all()
     serializer_class = ExecutionSerializer
-    filterset_class = ExecutionFilterSet
+    filterset_class = ExecutionFilter
     permission_classes = [IsAuthenticated]

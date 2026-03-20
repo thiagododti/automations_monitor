@@ -1,7 +1,7 @@
 import django_filters
 from apps.departments.models import Department
 
-class DepartmentFilterSet(django_filters.FilterSet):
+class DepartmentFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(
         field_name='name', lookup_expr='icontains', label='Departamento')
     description = django_filters.CharFilter(

@@ -2,7 +2,7 @@ import django_filters
 from apps.executions.models import Log
 
 
-class LogFilterSet(django_filters.FilterSet):
+class LogFilter(django_filters.FilterSet):
     execution = django_filters.CharFilter(
         field_name="execution", lookup_expr="exact")
     description = django_filters.CharFilter(

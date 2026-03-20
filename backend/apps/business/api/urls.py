@@ -3,7 +3,7 @@ from apps.business.api.views import BusinessViewSet
 
 router = DefaultRouter()
 
-router.register("", BusinessViewSet, basename="businesses")
+router.register("", BusinessViewSet, basename="business")
 
 
 urlpatterns = router.urls

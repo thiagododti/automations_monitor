@@ -82,10 +82,10 @@ class Step(models.Model):
         execution.potential_cost = totals['total_potential_cost'] or 0
 
         # 🔥 custo
-        if execution.automation and execution.automation.execution_cost:
+        if execution.automation and execution.cost_hour:
             execution.cost_economy = (
                 Decimal(execution.time_economy_seconds) / Decimal(3600)
-            ) * execution.automation.execution_cost
+            ) * execution.cost_hour
         else:
             execution.cost_economy = Decimal('0.00')
 
@@ -109,37 +109,43 @@ class Step(models.Model):
         ])
 
     def save(self, *args, **kwargs):
-        # 1. Preencher tempo manual na criação
+        # 1. Preenche o tempo manual humano da etapa
         if not self.pk:
             if self.execution and self.execution.automation:
-                self.time_manual_seconds = (
-                    self.execution.automation.manual_time or 0
-                )
+                self.time_manual_seconds = (self.execution.step_time or 0)
 
-        # 2. Calcular automação (uma vez só)
+        # 2. Calcula o tempo de execução da automação
         if self.date_start and self.date_end and self.time_automation_seconds == 0:
-            self.time_automation_seconds = int(
-                (self.date_end - self.date_start).total_seconds()
-            )
+            self.time_automation_seconds = int((self.date_end - self.date_start).total_seconds())
 
-        # 3. Economia (sempre consistente)
-        if self.time_manual_seconds is not None:
+        # 3. Economia de tempo
+        if self.date_end and self.time_manual_seconds is not None:
             self.time_economy_seconds = (
                 (self.time_manual_seconds or 0)
                 - (self.time_automation_seconds or 0)
             )
-
+            ###############################################################################
+            # REGRA DE NEGÓCIO: time_economy_seconds é zerado quando negativo pois,
+            # mesmo que a automação seja mais lenta, ela ainda libera o humano para
+            # outras atividades. Para medir prejuízo real de tempo, remover este bloco.
             if self.time_economy_seconds < 0:
                 self.time_economy_seconds = 0
+            ################################################################################
+        else:
+            ###############################################################################
+            # REGRA DE NEGÓCIO: Steps sem date_end (erros) não computam economia de tempo.
+            # O humano foi poupado de executar a etapa mesmo assim, mas como não houve
+            # conclusão, optamos por não contabilizar. Para considerar o tempo manual
+            # como economia mesmo em erros, atribuir self.time_manual_seconds aqui.
+            ###############################################################################
+            self.time_economy_seconds = 0
 
         # potencial (sempre 100% do manual)
         if self.date_end:
             self.potential_time_seconds = self.time_manual_seconds or 0
 
-            if self.execution.automation.execution_cost:
-                self.potential_cost = (
-                    Decimal(self.potential_time_seconds) / Decimal(3600)
-                ) * self.execution.automation.execution_cost
+            if self.execution.cost_hour:
+                self.potential_cost = (Decimal(self.potential_time_seconds) / Decimal(3600)) * self.execution.cost_hour
         else:
             self.potential_time_seconds = 0
             self.potential_cost = Decimal('0.00')

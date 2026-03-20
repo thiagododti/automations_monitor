@@ -42,9 +42,6 @@ class Automation(models.Model):
         verbose_name='Atualizado por'
     )
     manual_time = models.BigIntegerField(
-        default=0,
-        blank=True,
-        null=True,
         verbose_name='Tempo Manual (seg)'
     )
     position = models.ForeignKey(
@@ -55,14 +52,6 @@ class Automation(models.Model):
         related_name='automations',
         verbose_name='Cargo',
         db_comment='Campo para armazenar o cargo associado à automação, o cargo deve ser utilizado para calcular o custo de execução da automação com base no custo por hora do cargo e no tempo estimado de execução da automação'
-    )
-    execution_cost = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        blank=True,
-        null=True,
-        verbose_name='Custo de Execução',
-        db_comment='Campo para armazenar o custo estimado de execução da automação o custo deve ser calculado com base na etapa da execução'
     )
     in_manutention = models.BooleanField(
         default=True,
