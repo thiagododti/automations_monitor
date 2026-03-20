@@ -8,13 +8,13 @@ import winreg
 
 class Botlogger:
 
-    def __init__(self, automacao, empresa:str ):
+    def __init__(self, automacao, empresa: str):
         # Recebimento de parametros
         self.automation_id = automacao
         self.empresa = empresa
         # URL base e headers comuns para todas as requisições
-        self.token = "afa2384709c91a21e519cd585a3a87e234da6698"
-        self.url = "http://localhost:8081"
+        self.token = "5adf23f326cd95e33e9b01305b710e8427a1a09b"
+        self.url = "http://192.168.74.10"
         self.headers = {"Authorization": f"Token {self.token}"}
 
         self.automation_url = f"{self.url}/api/automations/{{id}}/"
@@ -45,11 +45,11 @@ class Botlogger:
         if self.automation and self.automation['auth_certificate']:
             self.troca_certificado()
 
-
     def _safe_request(self, method, url, retries=3, backoff=1, **kwargs):
         for attempt in range(retries):
             try:
-                response = requests.request(method, url, timeout=5, **kwargs)
+                response = requests.request(
+                    method, url, timeout=5, verify=False, **kwargs)
                 response.raise_for_status()
                 return response
 
@@ -131,7 +131,7 @@ class Botlogger:
             "GET",
             self.business_url,
             headers=self.headers,
-            params= params
+            params=params
         )
 
         results = self._safe_json(response)
@@ -139,7 +139,8 @@ class Botlogger:
         self.business = results.get("results")
 
         if not results:
-            raise ValueError("Nenhum business encontrado para os parâmetros informados")
+            raise ValueError(
+                "Nenhum business encontrado para os parâmetros informados")
 
         self.business_id = self.business[0].get("id")
 
@@ -158,7 +159,8 @@ class Botlogger:
         self.automation = self._safe_json(response)
 
         if not self.automation:
-            raise ValueError("Nenhuma automação encontrada para os parâmetros informados")
+            raise ValueError(
+                "Nenhuma automação encontrada para os parâmetros informados")
 
     def update_string_value(self, name: str, value: str, path: str):
         try:
@@ -209,7 +211,8 @@ class Botlogger:
 
         for field in required_fields:
             if not business.get(field):
-                raise ValueError(f"Campo obrigatório ausente no business: {field}")
+                raise ValueError(
+                    f"Campo obrigatório ausente no business: {field}")
 
         json_data = {
             "pattern": url,
@@ -458,8 +461,8 @@ def teste_alerta():
 
 
 if __name__ == "__main__":
-    #teste()
-    #teste_erro()
+    # teste()
+    # teste_erro()
     # teste_alerta()
 
-    botlogger = Botlogger(automacao=1,empresa='08880518000179')
+    botlogger = Botlogger(automacao=1, empresa='08880518000179')
