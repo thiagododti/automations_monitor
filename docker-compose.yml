@@ -1,3 +1,4 @@
+services:
   # db:
   #   container_name: db
   #   image: postgres:16
@@ -12,14 +13,11 @@
   #     - app_network
 
 
-services:
   backend:
     container_name: backend
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    env_file:
-      - stack.env
+    build: ./backend
+    # env_file:
+    #   - .env
     volumes:
       - media_data:/vol/web/media
       - log_data:/vol/web/logs
