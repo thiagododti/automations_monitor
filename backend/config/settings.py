@@ -3,9 +3,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env_path = BASE_DIR.parent / "stack.env"
+load_dotenv(dotenv_path=env_path)
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
