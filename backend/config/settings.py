@@ -6,7 +6,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(dotenv_path='stack.env')
+load_dotenv()
 
 
 def get_env_list(name, default=None):
@@ -20,6 +20,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 TESTING = os.getenv('TESTING', 'False') == 'True'
+ENABLE_HTTPS = os.getenv('ENABLE_HTTPS', 'False') == 'True'
 
 ALLOWED_HOSTS = get_env_list('ALLOWED_HOSTS', ['localhost', '127.0.0.1'])
 
@@ -90,25 +91,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+
+DATABASES = {
+    # Banco Postgree
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT'),
     }
-else:
-    DATABASES = {
-        # Banco Postgree
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB'),
-            'USER': os.getenv('POSTGRES_USER'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-            'HOST': os.getenv('POSTGRES_HOST'),
-            'PORT': os.getenv('POSTGRES_PORT'),
-        }
-    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -205,7 +199,7 @@ if not DEBUG:
 # ---------------------------------------------------------------------------------------------
 # Cosrs Headers
 # ---------------------------------------------------------------------------------------------
-if not DEBUG:
+if not DEBUG and ENABLE_HTTPS:
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = True

@@ -35,7 +35,7 @@ services:
       dockerfile: nginx/Dockerfile
     ports:
       - "80:80"
-      - "443:443"
+      # - "443:443"
     volumes:
       - media_data:/vol/web/media
       - log_data:/vol/web/logs

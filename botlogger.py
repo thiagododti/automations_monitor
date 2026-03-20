@@ -26,7 +26,7 @@ class Botlogger:
         self.business_url = f"{self.url}/api/business/"
 
         # Em ambiente de desenvolvimento, evita enviar mensagens para o Bitrix24
-        self.em_implementacao = True
+
         self.business = None
         self.business_id = None
         # Dados essenciais para o funcionamento do Botlogger
@@ -41,6 +41,10 @@ class Botlogger:
         # busca e empresa
         self.get_empresa()
         self.get_automation()
+        if self.automation and self.automation['in_manutention']:
+            self.em_implementacao = True
+        else:
+            self.em_implementacao = False
 
         if self.automation and self.automation['auth_certificate']:
             self.troca_certificado()
@@ -142,7 +146,7 @@ class Botlogger:
             raise ValueError(
                 "Nenhum business encontrado para os parâmetros informados")
 
-        self.business_id = self.business[0].get("id")
+        self.business_id = int(self.business[0].get("id"))
 
         if not self.business_id:
             raise ValueError("Business encontrado, mas sem ID válido")
@@ -231,12 +235,12 @@ class Botlogger:
         }
 
         import json
-        self.UpdateStringValue(name, json.dumps(json_data), path)
+        self.update_string_value(name, json.dumps(json_data), path)
 
     def inicio_execucao(self):
         data = {
             "status": "iniciado",
-            "automation": self.automation,
+            "automation": self.automation_id,
             "business": self.business_id
         }
 
@@ -326,7 +330,7 @@ class Botlogger:
 
         print(f"Etapa iniciada: {self.etapa_id}")
 
-    def fim_etapa(self):
+    def fim_etapa(self, mensagem=None):
         if not self.etapa_id:
             return
 
@@ -336,6 +340,9 @@ class Botlogger:
             json={"status": "concluido"},
             headers=self.headers
         )
+
+        if mensagem:
+            self.log(mensagem)
 
         print(f"Etapa finalizada: {self.etapa_id}")
 
