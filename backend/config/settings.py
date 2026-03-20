@@ -15,6 +15,7 @@ def get_env_list(name, default=None):
         return list(default or [])
     return [item.strip() for item in value.split(',') if item.strip()]
 
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
@@ -47,18 +48,17 @@ OTHERS_APPS = [
     'rest_framework.authtoken',
     'drf_spectacular',  # para swagger UI
     'django_filters',
-    # "corsheaders", Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
     "silk",
     "simple_history",
 
 ]
+
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + OTHERS_APPS
 
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
-    # 'corsheaders.middleware.CorsMiddleware', sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,6 +69,7 @@ MIDDLEWARE = [
     'silk.middleware.SilkyMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -216,31 +217,34 @@ if not DEBUG:
         ['https://localhost', 'https://127.0.0.1']
     )
 
+if DEBUG:
+    INSTALLED_APPS.append('corsheaders')
+    MIDDLEWARE.append('corsheaders.middleware.CorsMiddleware')
+    # configurações de CORS
+    # Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
+    CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 
-# configurações de CORS
-# CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
+    # Se você precisar enviar cookies / credenciais:
+    CORS_ALLOW_CREDENTIALS = True  # Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
 
-# Se você precisar enviar cookies / credenciais:
-# CORS_ALLOW_CREDENTIALS = True Sem necessidade de usar o corsheaders, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha e adicione 'corsheaders.middleware.CorsMiddleware' no MIDDLEWARE
+    # (opcional) Métodos e headers permitidos — geralmente os defaults já cobrem:
+    CORS_ALLOW_METHODS = [
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "PATCH",
+        "POST",
+        "PUT",
+    ]
 
-# (opcional) Métodos e headers permitidos — geralmente os defaults já cobrem:
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
+    CORS_ALLOW_HEADERS = [
+        "accept",
+        "accept-encoding",
+        "authorization",
+        "content-type",
+        "dnt",
+        "origin",
+        "user-agent",
+        "x-csrftoken",
+        "x-requested-with",
+    ]

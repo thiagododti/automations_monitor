@@ -32,26 +32,46 @@ function onlyDigits(value: string): string {
     return value.replace(/\D/g, '');
 }
 
-function extractCnpjFromCertificate(subjectAttrs: forge.pki.CertificateField[]): string | null {
-    const serialValueRaw = subjectAttrs.find((attr) => attr.shortName === 'serialNumber')?.value;
-    const serialValue = typeof serialValueRaw === 'string' ? serialValueRaw : '';
-    const serialDigits = onlyDigits(serialValue);
+function extractCnpjFromCertificate(
+    subjectAttrs: forge.pki.CertificateField[]
+): string | null {
+
+    // 1) Tenta extrair do commonName (CN) após ":"
+    const cnValue = subjectAttrs.find(
+        (attr) => attr.shortName === 'CN'
+    )?.value;
+
+    if (typeof cnValue === 'string') {
+        const match = cnValue.match(/:(\d{14})$/);
+        if (match) {
+            return match[1];
+        }
+    }
+
+    // 2) Fallback: tenta serialNumber
+    const serialValueRaw = subjectAttrs.find(
+        (attr) => attr.shortName === 'serialNumber'
+    )?.value;
+
+    const serialDigits =
+        typeof serialValueRaw === 'string'
+            ? serialValueRaw.replace(/\D/g, '')
+            : '';
 
     if (serialDigits.length >= 14) {
         return serialDigits.slice(0, 14);
     }
 
+    // 3) Fallback final: busca qualquer CNPJ no subject inteiro
     const allSubjectValues = subjectAttrs
-        .map((attr) => (typeof attr.value === 'string' ? attr.value : ''))
+        .map((attr) =>
+            typeof attr.value === 'string' ? attr.value : ''
+        )
         .join(' ');
 
-    const matches = allSubjectValues.match(/\d{14}/g);
+    const matches = allSubjectValues.match(/\d{14}/);
 
-    if (!matches?.length) {
-        return null;
-    }
-
-    return matches[0];
+    return matches ? matches[0] : null;
 }
 
 function arrayBufferToBinaryString(buffer: ArrayBuffer): string {
@@ -104,7 +124,7 @@ export async function readDigitalCertificate(
             .filter((cert): cert is forge.pki.Certificate => Boolean(cert));
 
         const certificate = getPrimaryCertificate(certificates);
-
+        console.log(certificate);
         return {
             subject_cn: getAttrValue(certificate.subject.attributes, 'CN'),
             subject_c: getAttrValue(certificate.subject.attributes, 'C'),
