@@ -1,12 +1,12 @@
 #!/bin/sh
 
-echo "Aguardando banco de dados..."
+# echo "Aguardando banco de dados..."
 
-while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do
-  sleep 1
-done
+# while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do
+#   sleep 1
+# done
 
-echo "Banco disponível."
+# echo "Banco disponível."
 
 python manage.py migrate --noinput
 
