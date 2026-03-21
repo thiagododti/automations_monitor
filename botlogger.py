@@ -258,7 +258,7 @@ class Botlogger:
 
         print(f"Execução iniciada: {self.execution_id}")
 
-    def fim_execucao(self):
+    def fim_execucao(self, mensagem=None):
         if not self.execution_id:
             return
 
@@ -268,6 +268,9 @@ class Botlogger:
             json={"status": "concluido"},
             headers=self.headers
         )
+
+        if mensagem:
+            self.log(mensagem)
 
         execution = self._safe_json(response)
         print(f"Execução finalizada: {execution.get('id')}")
