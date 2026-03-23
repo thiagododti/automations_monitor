@@ -185,14 +185,14 @@ export function AutomationDialog({ onSuccess, onClose, editData }: AutomationDia
                                         required
                                         type="text"
                                         inputMode="numeric"
-                                        pattern="[1-9]*"
+                                        pattern="^[1-9][0-9]*$"
                                         value={form.manual_time ?? 0}
                                         onChange={(e) => {
                                             const raw = e.target.value.replace(/\D/g, '');
                                             setForm({ ...form, manual_time: raw === '' ? 0 : Number(raw) });
                                         }}
                                         className="bg-secondary border-border"
-                                        min={0}
+                                        min={1}
                                     />
                                 </div>
                                 <div className="space-y-1.5">
