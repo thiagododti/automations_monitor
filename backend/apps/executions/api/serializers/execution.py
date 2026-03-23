@@ -16,6 +16,7 @@ class AutomationExecutionSerializer(serializers.ModelSerializer):
             "is_active"
         ]
 
+
 class BusinessExecutionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Business
@@ -29,7 +30,8 @@ class BusinessExecutionSerializer(serializers.ModelSerializer):
 class ExecutionSerializer(serializers.ModelSerializer):
     automation_data = AutomationExecutionSerializer(
         read_only=True, source="automation")
-    business_data = BusinessExecutionSerializer(read_only=True, source="business")
+    business_data = BusinessExecutionSerializer(
+        read_only=True, source="business")
 
     class Meta:
         model = Execution
@@ -79,3 +81,7 @@ class ExecutionSerializer(serializers.ModelSerializer):
 
         instance.status = status
         return super().update(instance, validated_data)
+
+
+class ClearTestExecutionsSerializer(serializers.Serializer):
+    automation_id = serializers.IntegerField(required=True)
