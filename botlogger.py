@@ -4,17 +4,21 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import random
 import winreg
+from dotenv import load_dotenv
+import os
 
 
 class Botlogger:
 
-    def __init__(self, automacao, empresa: str):
+    def __init__(self, empresa: str):
+        load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
         # Recebimento de parametros
-        self.automation_id = automacao
+        automation_id_env = os.getenv("AUTOMACAO_ID_PARA_EXECUCAO", 0)
+        self.automation_id = int(automation_id_env) if automation_id_env else 0
         self.empresa = empresa
         # URL base e headers comuns para todas as requisições
-        self.token = "5adf23f326cd95e33e9b01305b710e8427a1a09b"
-        self.url = "http://192.168.74.10"
+        self.token = os.getenv("TOKEN_BOTLOGGER_OFICIAL", None)
+        self.url = os.getenv("HOST_BOTLOGGER_OFICIAL", '')
         self.headers = {"Authorization": f"Token {self.token}"}
 
         self.automation_url = f"{self.url}/api/automations/{{id}}/"
@@ -37,6 +41,17 @@ class Botlogger:
         self.execution_id = None
         self.etapa = None
         self.etapa_id = None
+
+        # Verifica se token foi carregado
+        if not self.token:
+            raise ValueError(
+                "Token do Botlogger não encontrado. Verifique o arquivo .env o token foi carregado na variavel TOKEN_BOTLOGGER_OFICIAL.")
+        if self.automation_id == 0:
+            raise ValueError(
+                "ID da automação não encontrado. Verifique o arquivo .env o token foi carregado na variavel AUTOMACAO_ID_PARA_EXECUCAO.")
+        if not self.url:
+            raise ValueError(
+                "URL do Botlogger não encontrada. Verifique o arquivo .env o token foi carregado na variavel HOST_BOTLOGGER_OFICIAL.")
 
         # busca e empresa
         self.get_empresa()
@@ -63,7 +78,7 @@ class Botlogger:
                     print(
                         f"[BOTLOGGER RETRY] tentativa {attempt+1} falhou: {e} | retry em {wait}s")
                     print(
-                        f"Response erro: {e.response.text if e.response else 'No response'}")
+                        f"Response erro: {e.response.text if e.response.text else 'No response'}")
                     time.sleep(wait)
                 else:
                     print(f"[BOTLOGGER ERROR] falha definitiva: {e}")
@@ -256,6 +271,9 @@ class Botlogger:
         self.execution = execution
         self.execution_id = execution.get('id')
 
+        if not self.execution_id:
+            raise ValueError("Falha ao iniciar execução: ID não retornado")
+
         print(f"Execução iniciada: {self.execution_id}")
 
     def fim_execucao(self, mensagem=None):
@@ -269,10 +287,10 @@ class Botlogger:
             headers=self.headers
         )
 
+        execution = self._safe_json(response)
+
         if mensagem:
             self.log(mensagem)
-
-        execution = self._safe_json(response)
         print(f"Execução finalizada: {execution.get('id')}")
 
     def erro_execucao(self, mensagem):
@@ -378,101 +396,3 @@ class Botlogger:
         self.log(mensagem)
 
         print(f"Etapa com alerta: {self.etapa_id}")
-
-
-def executar_automacao(automation_id):
-
-    botlogger = Botlogger(automation=automation_id)
-    botlogger.inicio_execucao()
-
-    total_etapas = random.randint(1, 15)
-
-    todas_falharam = True
-    teve_alerta = False
-
-    for i in range(1, total_etapas + 1):
-        botlogger.inicio_etapa(f"Etapa {i}")
-        time.sleep(random.uniform(15, 70))  # Simula tempo de execução da etapa
-        resultado = random.choice(["sucesso", "erro", "alerta"])
-
-        if resultado == "erro":
-            botlogger.erro_etapa(mensagem=f"Erro na etapa {i}")
-
-        elif resultado == "alerta":
-            botlogger.alerta_etapa(mensagem=f"Alerta na etapa {i}")
-            todas_falharam = False
-            teve_alerta = True
-
-        else:
-            botlogger.fim_etapa()
-            todas_falharam = False
-
-    if todas_falharam:
-        botlogger.erro_execucao(mensagem="Todas as etapas falharam")
-
-    elif teve_alerta:
-        botlogger.alerta_execucao(
-            mensagem="Execução concluída com alertas")
-
-    else:
-        botlogger.fim_execucao()
-
-    time.sleep(0.5)
-
-
-def teste():
-    TOTAL_SIMULTANEAS = 7  # exemplo
-
-    with ThreadPoolExecutor(max_workers=TOTAL_SIMULTANEAS) as executor:
-        futures = [
-            executor.submit(executar_automacao, automation_id)
-            for automation_id in range(1, TOTAL_SIMULTANEAS + 1)
-        ]
-
-        for future in futures:
-            future.result()
-
-
-def teste_erro():
-    botlogger = Botlogger(automation=1)
-    botlogger.inicio_execucao()
-    botlogger.inicio_etapa("Etapa 1")
-    botlogger.erro_etapa(mensagem="Erro na etapa 1")
-    botlogger.erro_execucao(mensagem="Erro na execução")
-
-
-def teste_alerta():
-    # Instancia no inicio da automaçao
-    botlogger = Botlogger(automation=1)
-    botlogger.inicio_execucao()
-
-    documentos = 100
-    for documento in range(documentos):
-        # inicia a etapa
-        botlogger.inicio_etapa(f"Etapa {documento + 1}")
-
-        ###################################################
-        # executa a lógica da etapa (simulada por sleep)  #
-        ###################################################
-
-        # finaliza a etapa
-        botlogger.fim_etapa()
-        botlogger.alerta_etapa(mensagem=f"Alerta na etapa {documento + 1}")
-
-        # ou, se tivesse um erro:
-        botlogger.erro_etapa(mensagem=f"Erro na etapa {documento + 1}")
-
-    # fim da execução
-    botlogger.fim_execucao()
-    botlogger.alerta_execucao(mensagem="Alerta na execução")
-
-    # ou, se tivesse um erro:
-    botlogger.erro_execucao(mensagem="Erro na execução")
-
-
-if __name__ == "__main__":
-    # teste()
-    # teste_erro()
-    # teste_alerta()
-
-    botlogger = Botlogger(automacao=1, empresa='08880518000179')

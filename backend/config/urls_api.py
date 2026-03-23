@@ -7,4 +7,5 @@ urlpatterns = [
     path('executions/', include('apps.executions.api.urls')),
     path('business/', include('apps.business.api.urls')),
     path('positions/', include('apps.positions.api.urls')),
+    path('tokens/', include('apps.users.api.token_urls')),
 ]

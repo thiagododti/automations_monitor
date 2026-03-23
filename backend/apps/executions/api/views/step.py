@@ -1,17 +1,39 @@
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiResponse
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.executions.models import Step
 from apps.executions.api.serializers import StepSerializer
 from apps.executions.api.filters import StepFilter
 from django.db.models import F
+from config.serializers import DefaultErrorSerializer
 
 
 @extend_schema(
     tags=["Etapas"],
     description="Operações de CRUD para Etapas"
+)
+@extend_schema_view(
+    list=extend_schema(
+        responses={
+            200: StepSerializer(many=True),
+            401: OpenApiResponse(description="Não autenticado", response=DefaultErrorSerializer),
+            403: OpenApiResponse(description="Sem permissão", response=DefaultErrorSerializer),
+        }
+    ),
+    retrieve=extend_schema(
+        responses={
+            200: StepSerializer,
+            404: OpenApiResponse(description="Etapa não encontrada", response=DefaultErrorSerializer),
+        }
+    ),
+    create=extend_schema(
+        responses={
+            201: StepSerializer,
+            400: OpenApiResponse(description="Erro de validação", response=DefaultErrorSerializer),
+        }
+    ),
 )
 class PermissionsStepMixin(
     viewsets.GenericViewSet,

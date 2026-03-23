@@ -84,11 +84,11 @@ class Business(models.Model):
         null=True,
     )
 
-
     def __str__(self):
         return self.name
 
     class Meta:
         db_table = 'business'
-        verbose_name = "Negócio"
-        verbose_name_plural = "Negócios"
+        verbose_name = "Empresa"
+        verbose_name_plural = "Empresas"
+        ordering = ['name']

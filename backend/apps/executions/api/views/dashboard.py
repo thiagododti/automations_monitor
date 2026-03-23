@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view, OpenApiResponse
 from django.db.models import Sum, Count, Avg, Q
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
 
@@ -10,6 +10,7 @@ from apps.executions.models import Execution
 from apps.executions.constants import ExecutionStatus
 from apps.executions.api.filters import DashboardFilter
 from apps.executions.api.serializers import KPISerializer, KPIByAutomationSerializer, EvolutionSerializer
+from config.serializers import DefaultErrorSerializer
 
 
 class BaseDashboardView(APIView):
@@ -32,6 +33,15 @@ class BaseDashboardView(APIView):
         OpenApiParameter(name="date_from", type=str, required=False),
         OpenApiParameter(name="date_to", type=str, required=False),
     ]
+)
+@extend_schema_view(
+    get=extend_schema(
+        responses={
+            200: KPISerializer,
+            401: OpenApiResponse(description="Não autenticado", response=DefaultErrorSerializer),
+            403: OpenApiResponse(description="Sem permissão", response=DefaultErrorSerializer),
+        }
+    )
 )
 class KPIView(BaseDashboardView):
     def get(self, request):
@@ -73,6 +83,15 @@ class KPIView(BaseDashboardView):
         OpenApiParameter(name="date_from", type=str, required=False),
         OpenApiParameter(name="date_to", type=str, required=False),
     ]
+)
+@extend_schema_view(
+    get=extend_schema(
+        responses={
+            200: KPIByAutomationSerializer,
+            401: OpenApiResponse(description="Não autenticado", response=DefaultErrorSerializer),
+            403: OpenApiResponse(description="Sem permissão", response=DefaultErrorSerializer),
+        }
+    )
 )
 class KPIByAutomationView(BaseDashboardView):
     def get(self, request):
@@ -119,8 +138,18 @@ class KPIByAutomationView(BaseDashboardView):
         OpenApiParameter(name="status", type=str, required=False),
         OpenApiParameter(name="date_from", type=str, required=False),
         OpenApiParameter(name="date_to", type=str, required=False),
-        OpenApiParameter(name="group_by", type=str, required=False, enum=["day", "week", "month"]),
+        OpenApiParameter(name="group_by", type=str,
+                         required=False, enum=["day", "week", "month"]),
     ]
+)
+@extend_schema_view(
+    get=extend_schema(
+        responses={
+            200: EvolutionSerializer(many=True),
+            401: OpenApiResponse(description="Não autenticado", response=DefaultErrorSerializer),
+            403: OpenApiResponse(description="Sem permissão", response=DefaultErrorSerializer),
+        }
+    )
 )
 class EvolutionView(BaseDashboardView):
     TRUNC_MAP = {

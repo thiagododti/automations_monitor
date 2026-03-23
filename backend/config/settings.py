@@ -5,9 +5,13 @@ import os
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-load_dotenv(dotenv_path='stack.env')
+# se stack.env existir antesdo base_dir, carrega ele, caso contrário, carrega o .env
+if os.path.exists(BASE_DIR.parent / 'stack.env'):
+    load_dotenv(dotenv_path=BASE_DIR.parent / 'stack.env')
+    print("Carregado stack.env")
+else:
+    load_dotenv(dotenv_path=BASE_DIR.parent / '.env')
+    print("Carregado .env")
 
 
 def get_env_list(name, default=None):
@@ -70,6 +74,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'silk.middleware.SilkyMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 
@@ -93,17 +98,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-DATABASES = {
-    # Banco Postgree
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        # Banco Postgree
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB'),
+            'USER': os.getenv('POSTGRES_USER'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+            'HOST': os.getenv('POSTGRES_HOST'),
+            'PORT': os.getenv('POSTGRES_PORT'),
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -140,6 +153,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework.authentication.SessionAuthentication', Sem necessidade de usar a autenticação de sessão, pois o frontend e backend estão no mesmo domínio, caso queira usar em um cenário de domínios separados, descomente essa linha
     ),
+    "EXCEPTION_HANDLER": "config.exceptions.custom_exception_handler",
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,

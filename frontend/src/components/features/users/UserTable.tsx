@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { UserTokenDialog } from '@/components/features/users/UserTokenDialog';
 import type { User } from '@/types/user';
 
 interface UserTableProps {
@@ -115,9 +116,12 @@ export function UserTable({ data, isLoading, onEdit }: UserTableProps) {
 
                             {/* Ações */}
                             <TableCell>
-                                <Button variant="ghost" size="sm" onClick={() => onEdit(user)}>
-                                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                                </Button>
+                                <div className="flex items-center justify-end gap-1">
+                                    <UserTokenDialog user={user} />
+                                    <Button variant="ghost" size="sm" onClick={() => onEdit(user)}>
+                                        <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                                    </Button>
+                                </div>
                             </TableCell>
                         </TableRow>
                     ))}
