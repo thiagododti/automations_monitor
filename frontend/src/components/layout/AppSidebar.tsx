@@ -11,6 +11,7 @@ import {
   Footprints,
   ChevronLeft,
   Activity,
+  Github,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -68,6 +69,19 @@ export function AppSidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <a
+        href="https://github.com/AlldaxBots/botlogger"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(
+          'flex items-center gap-3 border-t border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors',
+          collapsed && 'justify-center px-0'
+        )}
+      >
+        <Github className="h-4 w-4 shrink-0" />
+        {!collapsed && <span>BotLogger</span>}
+      </a>
 
       <button
         onClick={() => setCollapsed(!collapsed)}
