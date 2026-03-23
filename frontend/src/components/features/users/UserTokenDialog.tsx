@@ -1,6 +1,17 @@
 import { useMemo, useState } from 'react';
 import { KeyRound, Loader2, Copy, RefreshCcw, PlusCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useCreateToken, useRegenerateToken, useToken } from '@/hooks/useTokens';
 import { useAuth } from '@/hooks/useAuth';
@@ -132,11 +143,35 @@ export function UserTokenDialog({ user }: UserTokenDialogProps) {
                                     Criar token
                                 </Button>
                             ) : (
-                                <Button onClick={handleRegenerateToken} disabled={isMutating || tokenQuery.isLoading}>
-                                    {regenerateToken.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                    {!regenerateToken.isPending && <RefreshCcw className="h-4 w-4" />}
-                                    Regenerar token
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button disabled={isMutating || tokenQuery.isLoading}>
+                                            {regenerateToken.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                                            {!regenerateToken.isPending && <RefreshCcw className="h-4 w-4" />}
+                                            Gerar novo token
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Confirmar geração do novo token</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Se você continuar, será gerado um novo token para este usuário,
+                                                e isso pode afetar a autenticação de todas as automações que utilizam
+                                                o token atual. Ao prosseguir, será necessário atualizar o
+                                                token das automações que ainda estiverem com o token antigo.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleRegenerateToken}
+                                                disabled={isMutating || tokenQuery.isLoading}
+                                            >
+                                                Confirmar e gerar novo token
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             )}
                         </div>
                     )}
