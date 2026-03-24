@@ -32,3 +32,11 @@ export function useUpdateExecution() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['executions'] }),
   });
 }
+
+export function useClearTestExecutions() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (automation_id: number) => executionsApi.clearTestExecutions(automation_id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['executions'] }),
+  });
+}

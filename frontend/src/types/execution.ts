@@ -36,3 +36,7 @@ export interface ExecutionFilters {
   date_start?: string;
   status?: string;
 }
+
+export interface ClearExecutionsTest {
+  automation_id: number;
+}

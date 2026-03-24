@@ -9,3 +9,7 @@ export interface ApiError {
   detail?: string;
   [key: string]: unknown;
 }
+
+export interface ApiResponse {
+  detail: string;
+}

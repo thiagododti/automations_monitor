@@ -5,13 +5,13 @@ import os
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# se stack.env existir antesdo base_dir, carrega ele, caso contrário, carrega o .env
-if os.path.exists(BASE_DIR.parent / 'stack.env'):
-    load_dotenv(dotenv_path=BASE_DIR.parent / 'stack.env')
-    print("Carregado stack.env")
+env_path = BASE_DIR.parent / ".env"
+
+if env_path.exists():
+    load_dotenv(env_path)
 else:
-    load_dotenv(dotenv_path=BASE_DIR.parent / '.env')
-    print("Carregado .env")
+    raise FileNotFoundError(".env não encontrado na raiz do projeto")
+load_dotenv()
 
 
 def get_env_list(name, default=None):
@@ -98,26 +98,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+# if DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
+# else:
+DATABASES = {
+    # Banco Postgree
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT'),
     }
-else:
-    DATABASES = {
-        # Banco Postgree
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB'),
-            'USER': os.getenv('POSTGRES_USER'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-            'HOST': os.getenv('POSTGRES_HOST'),
-            'PORT': os.getenv('POSTGRES_PORT'),
-        }
-    }
-
+}
+print(
+    f"Conectando ao banco de dados com os dados da .env \n HOST: {os.getenv('POSTGRES_HOST')} \n PORT: {os.getenv('POSTGRES_PORT')} \n DB: {os.getenv('POSTGRES_DB')} \n USER: {os.getenv('POSTGRES_USER')}")
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },

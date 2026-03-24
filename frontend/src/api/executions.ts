@@ -14,4 +14,7 @@ export const executionsApi = {
 
   patch: (id: number, data: ExecutionUpdate) =>
     api.patch<Execution>(`/api/executions/${id}/`, data),
+
+  clearTestExecutions: (automation_id: number) =>
+    api.post('/api/executions/clear-test-executions/', { automation_id }),
 };
