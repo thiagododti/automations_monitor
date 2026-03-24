@@ -7,7 +7,7 @@ from decimal import Decimal
 class Step(models.Model):
     execution = models.ForeignKey(
         "executions.Execution",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="steps",
         verbose_name='Execução',
     )
