@@ -6,7 +6,7 @@ from apps.executions.constants import ExecutionStatus
 
 
 def check_stuck_executions():
-
+    print("Verificando execuções travadas...")
     timeout = timezone.now() - timedelta(minutes=30)
 
     stuck_executions = Execution.objects.filter(
@@ -26,3 +26,6 @@ def check_stuck_executions():
         status=ExecutionStatus.ERRO,
         date_end=timezone.now()
     )
+    if stuck_executions.exists():
+        print(
+            f"{stuck_executions.count()} execuções travadas foram atualizadas para erro.")
