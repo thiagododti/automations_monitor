@@ -5,12 +5,12 @@ import os
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-env_path = BASE_DIR.parent / "stack.env"
+# env_path = BASE_DIR.parent / "stack.env"
 
-if env_path.exists():
-    load_dotenv(env_path)
-else:
-    raise FileNotFoundError("stack.env não encontrado na raiz do projeto")
+# if env_path.exists():
+#     load_dotenv(env_path)
+# else:
+#     raise FileNotFoundError("stack.env não encontrado na raiz do projeto")
 load_dotenv()
 
 
