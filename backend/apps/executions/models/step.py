@@ -98,15 +98,16 @@ class Step(models.Model):
         else:
             execution.efficiency_percent = Decimal('0.00')
 
-        execution.save(update_fields=[
-            'time_automation_seconds',
-            'time_manual_seconds',
-            'time_economy_seconds',
-            'cost_economy',
-            'potential_time_seconds',
-            'potential_cost',
-            'efficiency_percent',
-        ])
+        # execution.save(update_fields=[
+        #     'time_automation_seconds',
+        #     'time_manual_seconds',
+        #     'time_economy_seconds',
+        #     'cost_economy',
+        #     'potential_time_seconds',
+        #     'potential_cost',
+        #     'efficiency_percent',
+        # ])
+        execution.save()
 
     def save(self, *args, **kwargs):
         # 1. Preenche o tempo manual humano da etapa
@@ -116,7 +117,8 @@ class Step(models.Model):
 
         # 2. Calcula o tempo de execução da automação
         if self.date_start and self.date_end and self.time_automation_seconds == 0:
-            self.time_automation_seconds = int((self.date_end - self.date_start).total_seconds())
+            self.time_automation_seconds = int(
+                (self.date_end - self.date_start).total_seconds())
 
         # 3. Economia de tempo
         if self.date_end and self.time_manual_seconds is not None:
@@ -145,7 +147,8 @@ class Step(models.Model):
             self.potential_time_seconds = self.time_manual_seconds or 0
 
             if self.execution.cost_hour:
-                self.potential_cost = (Decimal(self.potential_time_seconds) / Decimal(3600)) * self.execution.cost_hour
+                self.potential_cost = (
+                    Decimal(self.potential_time_seconds) / Decimal(3600)) * self.execution.cost_hour
         else:
             self.potential_time_seconds = 0
             self.potential_cost = Decimal('0.00')
