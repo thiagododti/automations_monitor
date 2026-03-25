@@ -18,6 +18,8 @@ services:
     build: ./backend
     env_file:
       - stack.env
+    environment:
+      - TZ=America/Sao_Paulo
     volumes:
       - media_data:/vol/web/media
       - log_data:/vol/web/logs
@@ -35,6 +37,8 @@ services:
       dockerfile: nginx/Dockerfile
     ports:
       - "80:80"
+    environment:
+      - TZ=America/Sao_Paulo
       # - "443:443"
     volumes:
       - media_data:/vol/web/media
@@ -54,6 +58,8 @@ services:
       - botlogger_backend
     env_file:
       - stack.env
+    environment:
+      - TZ=America/Sao_Paulo
     volumes:
       - media_data:/vol/web/media
       - log_data:/vol/web/logs
