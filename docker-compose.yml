@@ -16,6 +16,7 @@ services:
   backend:
     container_name: backend
     build: ./backend
+    image: backend:latest
     env_file:
       - stack.env
     volumes:
@@ -46,7 +47,22 @@ services:
     networks:
       - app_network
 
-
+  scheduler:
+    container_name: scheduler
+    image: backend:latest
+    command: python manage.py scheduler
+    depends_on:
+      - backend
+    env_file:
+      - stack.env
+    volumes:
+      - media_data:/vol/web/media
+      - log_data:/vol/web/logs
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    restart: unless-stopped
+    networks:
+      - app_network
 volumes:
   # postgres_data:
   media_data:

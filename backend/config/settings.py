@@ -46,6 +46,7 @@ LOCAL_APPS = [
     'apps.departments.apps.DepartmentsConfig',
     'apps.business.apps.BusinessConfig',
     'apps.positions.apps.PositionsConfig',
+    'apps.scheduler.apps.SchedulerConfig',
 ]
 
 OTHERS_APPS = [

@@ -21,6 +21,10 @@ class Execution(models.Model):
         verbose_name='Data de fim',
         db_comment="Data fim da execução, preenchida quando a execução for finalizada (Sucesso ou Alerta)"
     )
+    last_update = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Última atualização',
+    )
     cost_hour = models.DecimalField(
         max_digits=10,
         decimal_places=2,
