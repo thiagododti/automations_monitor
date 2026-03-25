@@ -8,6 +8,8 @@ from apps.executions.constants import ExecutionStatus
 def check_stuck_executions():
     print("Verificando execuções travadas...")
     timeout = timezone.now() - timedelta(minutes=30)
+    print(
+        f"Considerando execuções iniciadas antes de {timeout} como travadas.")
 
     stuck_executions = Execution.objects.filter(
         status=ExecutionStatus.INICIADO,
