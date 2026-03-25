@@ -26,4 +26,4 @@ RUN mkdir -p /vol/web/media /vol/web/logs
 ENTRYPOINT ["/app/entrypoint.sh"]
 
 
-CMD ["gunicorn","config.wsgi:application","--bind","0.0.0.0:3000","--workers","10","--threads","10","--timeout","60"]
+CMD ["gunicorn","config.wsgi:application","--bind","0.0.0.0:3000","--workers","10","--threads","10","--timeout","60", "--access-logfile", "-"]
