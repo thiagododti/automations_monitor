@@ -16,7 +16,6 @@ services:
   backend:
     container_name: backend
     build: ./backend
-    image: backend:latest
     env_file:
       - stack.env
     volumes:
@@ -49,7 +48,7 @@ services:
 
   scheduler:
     container_name: scheduler
-    image: backend:latest
+    build: ./backend
     command: python manage.py scheduler
     depends_on:
       - backend
