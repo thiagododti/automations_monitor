@@ -13,8 +13,8 @@ services:
   #     - app_network
 
 
-  backend:
-    container_name: backend
+  botlogger_backend:
+    container_name: botlogger_backend
     build: ./backend
     env_file:
       - stack.env
@@ -28,8 +28,8 @@ services:
       - app_network
 
 
-  nginx:
-    container_name: nginx
+  botlogger_nginx:
+    container_name: botlogger_nginx
     build:
       context: .
       dockerfile: nginx/Dockerfile
@@ -41,17 +41,17 @@ services:
       - log_data:/vol/web/logs
       - certificates_data:/etc/nginx/certs
     depends_on:
-      - backend
+      - botlogger_backend
     restart: unless-stopped
     networks:
       - app_network
 
-  scheduler:
-    container_name: scheduler
+  botlogger_scheduler:
+    container_name: botlogger_scheduler
     build: ./backend
     command: python manage.py scheduler
     depends_on:
-      - backend
+      - botlogger_backend
     env_file:
       - stack.env
     volumes:
