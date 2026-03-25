@@ -3,35 +3,46 @@ import {
   LayoutDashboard,
   Cpu,
   PlayCircle,
-  Building2,
   Store,
   Users,
   BriefcaseBusiness,
   FileText,
   Footprints,
   ChevronLeft,
+  ChevronDown,
   Activity,
   Github,
+  FolderOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
-const navItems = [
+const topItems = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
   { label: 'Monitoramento', icon: Activity, href: '/monitoramento' },
-  { label: 'Automações', icon: Cpu, href: '/automations' },
+];
+
+const executionItems = [
   { label: 'Execuções', icon: PlayCircle, href: '/executions' },
   { label: 'Steps', icon: Footprints, href: '/steps' },
   { label: 'Logs', icon: FileText, href: '/logs' },
-  { label: 'Departamentos', icon: Building2, href: '/departments' },
+];
+
+const cadastrosItems = [
   { label: 'Empresas', icon: Store, href: '/businesses' },
   { label: 'Cargos', icon: BriefcaseBusiness, href: '/positions' },
   { label: 'Usuários', icon: Users, href: '/users' },
+  { label: 'Automações', icon: Cpu, href: '/automations' },
 ];
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [cadastrosOpen, setCadastrosOpen] = useState(false);
   const location = useLocation();
+
+  const isCadastrosActive = cadastrosItems.some((item) =>
+    location.pathname.startsWith(item.href)
+  );
 
   return (
     <aside
@@ -51,7 +62,7 @@ export function AppSidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 p-2">
-        {navItems.map((item) => (
+        {topItems.map((item) => (
           <NavLink
             key={item.href}
             to={item.href}
@@ -68,6 +79,73 @@ export function AppSidebar() {
             {!collapsed && <span>{item.label}</span>}
           </NavLink>
         ))}
+
+        <div className="my-1 border-t border-border" />
+
+        {executionItems.map((item) => (
+          <NavLink
+            key={item.href}
+            to={item.href}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                isActive
+                  ? 'bg-primary/10 text-primary font-medium'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+              )
+            }
+          >
+            <item.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>{item.label}</span>}
+          </NavLink>
+        ))}
+
+        <div className="my-1 border-t border-border" />
+
+        <button
+          onClick={() => {
+            if (!collapsed) setCadastrosOpen(!cadastrosOpen);
+          }}
+          className={cn(
+            'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+            isCadastrosActive
+              ? 'bg-primary/10 text-primary font-medium'
+              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+            collapsed && 'justify-center'
+          )}
+        >
+          <FolderOpen className="h-4 w-4 shrink-0" />
+          {!collapsed && (
+            <>
+              <span className="flex-1 text-left">Cadastros</span>
+              <ChevronDown
+                className={cn('h-4 w-4 transition-transform', cadastrosOpen && 'rotate-180')}
+              />
+            </>
+          )}
+        </button>
+
+        {!collapsed && cadastrosOpen && (
+          <div className="ml-3 space-y-1 border-l border-border pl-3">
+            {cadastrosItems.map((item) => (
+              <NavLink
+                key={item.href}
+                to={item.href}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                    isActive
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  )
+                }
+              >
+                <item.icon className="h-4 w-4 shrink-0" />
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
+        )}
       </nav>
 
       <a
