@@ -186,32 +186,32 @@ SIMPLE_JWT = {
 # ---------------------------------------------------------------------------------------------
 # Logs
 # ---------------------------------------------------------------------------------------------
-if not DEBUG:
-    LOGS_DIR = os.getenv('LOG_ROOT', '')
-    os.makedirs(LOGS_DIR, exist_ok=True)
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': 'INFO',
-                'class': 'logging.handlers.TimedRotatingFileHandler',
-                'filename': os.path.join(LOGS_DIR, 'django.log'),
-                'when': 'midnight',
-                'interval': 1,
-                'backupCount': 30,
-                'encoding': 'utf-8',
-                'delay': True,
-            },
-        },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'INFO',
-                'propagate': True,
-            },
-        },
-    }
+# if not DEBUG:
+#     LOGS_DIR = os.getenv('LOG_ROOT', '')
+#     os.makedirs(LOGS_DIR, exist_ok=True)
+#     LOGGING = {
+#         'version': 1,
+#         'disable_existing_loggers': False,
+#         'handlers': {
+#             'file': {
+#                 'level': 'INFO',
+#                 'class': 'logging.handlers.TimedRotatingFileHandler',
+#                 'filename': os.path.join(LOGS_DIR, 'django.log'),
+#                 'when': 'midnight',
+#                 'interval': 1,
+#                 'backupCount': 30,
+#                 'encoding': 'utf-8',
+#                 'delay': True,
+#             },
+#         },
+#         'loggers': {
+#             'django': {
+#                 'handlers': ['file'],
+#                 'level': 'INFO',
+#                 'propagate': True,
+#             },
+#         },
+#     }
 
 # ---------------------------------------------------------------------------------------------
 # Cosrs Headers
