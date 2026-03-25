@@ -118,8 +118,6 @@ DATABASES = {
         'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
-print(
-    f"Conectando ao banco de dados com os dados da .env \n HOST: {os.getenv('POSTGRES_HOST')} \n PORT: {os.getenv('POSTGRES_PORT')} \n DB: {os.getenv('POSTGRES_DB')} \n USER: {os.getenv('POSTGRES_USER')}")
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
