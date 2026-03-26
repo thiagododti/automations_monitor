@@ -5,12 +5,12 @@ import { PaginationControls } from '@/components/shared/PaginationControls';
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { UserDialog } from '@/components/features/users/UserDialog';
 import { UserTable } from '@/components/features/users/UserTable';
+import { EmailFilter, FullNameFilter, UsernameFilter } from '@/filters/filters';
 
 const filterFields: FilterField[] = [
-  { key: 'username', label: 'Usuário', type: 'text', placeholder: 'Buscar por usuário' },
-  { key: 'email', label: 'Email', type: 'text', placeholder: 'Buscar por email' },
-  { key: 'first_name', label: 'Nome', type: 'text', placeholder: 'Buscar por nome' },
-  { key: 'last_name', label: 'Sobrenome', type: 'text', placeholder: 'Buscar por sobrenome' },
+  FullNameFilter,
+  EmailFilter,
+  UsernameFilter
 ];
 
 export default function UsersPage() {

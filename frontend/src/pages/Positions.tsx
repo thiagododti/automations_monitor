@@ -5,6 +5,7 @@ import { PaginationControls } from '@/components/shared/PaginationControls';
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { PositionDialog } from '@/components/features/positions/PositionDialog';
 import { PositionTable } from '@/components/features/positions/PositionTable';
+import { DescriptionFilter, NameFilter, PositionNivelsFilter } from '@/filters/filters';
 
 export default function PositionsPage() {
     const [filters, setFilters] = useState<PositionFilters>({});
@@ -15,8 +16,8 @@ export default function PositionsPage() {
     const { data: nivels } = usePositionNivels(true);
 
     const filterFields: FilterField[] = [
-        { key: 'name', label: 'Nome', type: 'text', placeholder: 'Buscar por nome' },
-        { key: 'description', label: 'Descrição', type: 'text', placeholder: 'Buscar por descrição' },
+        NameFilter,
+        DescriptionFilter,
         {
             key: 'nivel',
             label: 'Nível',

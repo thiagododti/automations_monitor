@@ -40,6 +40,5 @@ export interface UserUpdate extends Partial<Omit<UserCreate, 'password'>> {
 export interface UserFilters {
   username?: string;
   email?: string;
-  first_name?: string;
-  last_name?: string;
+  full_name?: string;
 }

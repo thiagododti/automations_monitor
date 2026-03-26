@@ -5,10 +5,11 @@ import { PaginationControls } from '@/components/shared/PaginationControls';
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { AutomationDialog } from '@/components/features/automations/AutomationDialog';
 import { AutomationTable } from '@/components/features/automations/AutomationTable';
+import { IsActiveFilter, NameFilter } from '@/filters/filters';
 
 const filterFields: FilterField[] = [
-  { key: 'name', label: 'Nome', type: 'text', placeholder: 'Buscar por nome' },
-  { key: 'is_active', label: 'Status', type: 'select', options: [{ label: 'Ativo', value: 'true' }, { label: 'Inativo', value: 'false' }] },
+  NameFilter,
+  IsActiveFilter,
 ];
 
 export default function AutomationsPage() {

@@ -4,19 +4,13 @@ import type { StepFilters } from '@/types/step';
 import { PaginationControls } from '@/components/shared/PaginationControls';
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { StepTable } from '@/components/features/steps/StepTable';
+import { DateStartFilter, ExecutionIdFilter, StatusFilters, StepIdentificationFilter } from '@/filters/filters';
 
 const filterFields: FilterField[] = [
-  { key: 'execution', label: 'Execução (ID)', type: 'text', placeholder: 'ID da execução' },
-  { key: 'identification', label: 'Identificação', type: 'text', placeholder: 'Buscar por identificação' },
-  {
-    key: 'status', label: 'Status', type: 'select', options: [
-      { label: 'Iniciado', value: 'iniciado' },
-      { label: 'Concluído', value: 'concluido' },
-      { label: 'Erro', value: 'erro' },
-      { label: 'Alerta', value: 'alerta' },
-    ]
-  },
-  { key: 'date_start', label: 'Data Início', type: 'date' },
+  ExecutionIdFilter,
+  StepIdentificationFilter,
+  StatusFilters,
+  DateStartFilter,
 ];
 
 export default function StepsPage() {

@@ -1,7 +1,7 @@
 import { AutomationDetails } from "./automation";
 import { BusinessDetails } from "./business";
 
-export type ExecutionStatus = 'iniciado' | 'concluido' | 'erro' | 'alerta';
+export type ExecutionStatus = 'iniciado' | 'concluido' | 'erro' | 'alerta' | 'teste';
 
 export interface Execution {
   id: number;

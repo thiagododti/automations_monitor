@@ -51,6 +51,9 @@ class User(AbstractUser):
         'birthday'
     ]
 
+
+
+
     def __str__(self):
         return self.username
 

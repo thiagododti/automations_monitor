@@ -4,18 +4,13 @@ import type { ExecutionFilters } from '@/types/execution';
 import { PaginationControls } from '@/components/shared/PaginationControls';
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { ExecutionTable } from '@/components/features/executions/ExecutionTable';
+import { AutomationNameFilter, DateStartFilter, StatusFilters } from '@/filters/filters';
 
 const filterFields: FilterField[] = [
-  { key: 'automation', label: 'Automação', type: 'text', placeholder: 'Nome da automação' },
-  { key: 'date_start', label: 'Data Início', type: 'date' },
-  {
-    key: 'status', label: 'Status', type: 'select', options: [
-      { label: 'Iniciado', value: 'iniciado' },
-      { label: 'Concluído', value: 'concluido' },
-      { label: 'Erro', value: 'erro' },
-      { label: 'Alerta', value: 'alerta' },
-    ]
-  },
+  AutomationNameFilter,
+  DateStartFilter,
+  StatusFilters,
+
 ];
 
 export default function ExecutionsPage() {

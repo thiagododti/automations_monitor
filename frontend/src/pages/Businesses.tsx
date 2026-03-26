@@ -5,11 +5,12 @@ import { PaginationControls } from '@/components/shared/PaginationControls';
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { BusinessDialog } from '@/components/features/business/BusinessDialog';
 import { BusinessTable } from '@/components/features/business/BusinessTable';
+import { CNPJFilter, DescriptionFilter, NameFilter } from '@/filters/filters';
 
 const filterFields: FilterField[] = [
-    { key: 'name', label: 'Nome', type: 'text', placeholder: 'Buscar por nome' },
-    { key: 'description', label: 'Descrição', type: 'text', placeholder: 'Buscar por descrição' },
-    { key: 'cnpj', label: 'CNPJ', type: 'text', placeholder: 'Buscar por CNPJ' },
+    NameFilter,
+    DescriptionFilter,
+    CNPJFilter,
 ];
 
 export default function BusinessesPage() {

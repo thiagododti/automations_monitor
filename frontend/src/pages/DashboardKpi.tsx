@@ -10,6 +10,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { EvolutionFilters, KPiFilters, KpisByAutomationFilters } from '@/types/dashboard';
+import { DateFromFilter, DateToFilter, StatusFilters } from '@/filters/filters';
 
 type GroupBy = 'day' | 'week' | 'month';
 
@@ -203,18 +204,7 @@ export default function DashboardKpiPage() {
                 })),
                 placeholder: 'Todas',
             },
-            {
-                key: 'status',
-                label: 'Status',
-                type: 'select',
-                options: [
-                    { value: 'iniciado', label: 'Iniciado' },
-                    { value: 'concluido', label: 'Concluído' },
-                    { value: 'erro', label: 'Erro' },
-                    { value: 'alerta', label: 'Alerta' },
-                ],
-                placeholder: 'Todos',
-            },
+            StatusFilters,
             {
                 key: 'group_by',
                 label: 'Agrupar por',
@@ -226,8 +216,8 @@ export default function DashboardKpiPage() {
                 ],
                 placeholder: 'Mês',
             },
-            { key: 'date_from', label: 'Data inicial', type: 'date' },
-            { key: 'date_to', label: 'Data final', type: 'date' },
+            DateFromFilter,
+            DateToFilter,
         ],
         [businessOptions, automationsData?.results],
     );

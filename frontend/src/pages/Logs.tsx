@@ -4,11 +4,12 @@ import type { LogFilters } from '@/types/log';
 import { PaginationControls } from '@/components/shared/PaginationControls';
 import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
 import { LogTable } from '@/components/features/Logs_page/LogTable';
+import { CreatedAtFilter, DescriptionFilter, ExecutionIdFilter } from '@/filters/filters';
 
 const filterFields: FilterField[] = [
-  { key: 'execution', label: 'Execução (ID)', type: 'text', placeholder: 'ID da execução' },
-  { key: 'description', label: 'Descrição', type: 'text', placeholder: 'Buscar na descrição' },
-  { key: 'created_at', label: 'Data Criação', type: 'date' },
+  ExecutionIdFilter,
+  DescriptionFilter,
+  CreatedAtFilter,
 ];
 
 export default function LogsPage() {
