@@ -8,6 +8,7 @@ import DepartmentsPage from '@/pages/Departments';
 import BusinessesPage from '@/pages/Businesses';
 import AutomationsPage from '@/pages/Automations';
 import ExecutionsPage from '@/pages/Executions';
+import ExecutionDetailPage from '@/pages/ExecutionDetail';
 import LogsPage from '@/pages/Logs';
 import StepsPage from '@/pages/Steps';
 import PositionsPage from '@/pages/Positions';
@@ -26,6 +27,7 @@ export function AppRoutes() {
           <Route path="/businesses" element={<BusinessesPage />} />
           <Route path="/automations" element={<AutomationsPage />} />
           <Route path="/executions" element={<ExecutionsPage />} />
+          <Route path="/executions/:id" element={<ExecutionDetailPage />} />
           <Route path="/logs" element={<LogsPage />} />
           <Route path="/steps" element={<StepsPage />} />
           <Route path="/positions" element={<PositionsPage />} />

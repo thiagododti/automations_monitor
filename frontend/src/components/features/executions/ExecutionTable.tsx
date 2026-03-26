@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Bot, Loader2, User } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -52,6 +53,8 @@ function Tip({ children, content }: { children: React.ReactNode; content: React.
 }
 
 export function ExecutionTable({ data, isLoading }: ExecutionTableProps) {
+    const navigate = useNavigate();
+
     if (isLoading) {
         return (
             <div className="flex justify-center py-10">
@@ -97,7 +100,11 @@ export function ExecutionTable({ data, isLoading }: ExecutionTableProps) {
                     </TableHeader>
                     <TableBody>
                         {data?.results.map((exec) => (
-                            <TableRow key={exec.id} className="border-border">
+                            <TableRow
+                                key={exec.id}
+                                className="border-border cursor-pointer hover:bg-muted/40 transition-colors"
+                                onClick={() => navigate(`/executions/${exec.id}`)}
+                            >
 
                                 {/* ID */}
                                 <TableCell className="font-mono text-xs tabular-nums text-muted-foreground">
