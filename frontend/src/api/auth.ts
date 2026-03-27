@@ -10,4 +10,7 @@ export const authApi = {
 
   verify: (token: string) =>
     api.post('/api/token/verify/', { token }),
+
+  blacklist: (refresh: string) =>
+    api.post('/api/token/blacklist/', { refresh }),
 };

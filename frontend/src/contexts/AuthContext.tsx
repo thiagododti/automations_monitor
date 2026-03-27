@@ -1,8 +1,8 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { User } from '@/types/user';
 import { authApi } from '@/api/auth';
 import { usersApi } from '@/api/users';
-import { decodeJwt, isTokenExpired } from '@/lib/jwt';
+import { decodeJwt, isTokenExpired, getTokenExpiry } from '@/lib/jwt';
 
 export interface AuthContextType {
   user: User | null;
@@ -26,13 +26,77 @@ async function fetchUserById(userId: number): Promise<User | null> {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const logout = useCallback(() => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+      refreshTimerRef.current = null;
+    }
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
+    }
+    const refreshToken = localStorage.getItem('refresh_token');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setUser(null);
+    if (refreshToken) {
+      authApi.blacklist(refreshToken).catch(() => { });
+    }
     window.location.href = '/login';
   }, []);
+
+  const scheduleLogout = useCallback((refreshToken: string) => {
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
+    }
+
+    const expiry = getTokenExpiry(refreshToken);
+    if (!expiry) return;
+
+    const msUntilLogout = expiry.getTime() - Date.now();
+    if (msUntilLogout <= 0) {
+      logout();
+      return;
+    }
+
+    logoutTimerRef.current = setTimeout(() => {
+      logout();
+    }, msUntilLogout);
+  }, [logout]);
+
+  const scheduleTokenRefresh = useCallback((accessToken: string) => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+      refreshTimerRef.current = null;
+    }
+
+    const expiry = getTokenExpiry(accessToken);
+    if (!expiry) return;
+
+    const msUntilRefresh = expiry.getTime() - Date.now() - 60_000;
+    if (msUntilRefresh <= 0) return;
+
+    refreshTimerRef.current = setTimeout(async () => {
+      const refreshToken = localStorage.getItem('refresh_token');
+      if (!refreshToken || isTokenExpired(refreshToken)) {
+        logout();
+        return;
+      }
+      try {
+        const { data } = await authApi.refresh(refreshToken);
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        scheduleTokenRefresh(data.access);
+        scheduleLogout(data.refresh);
+      } catch {
+        logout();
+      }
+    }, msUntilRefresh);
+  }, [logout, scheduleLogout]);
 
   const login = async (username: string, password: string) => {
     const { data } = await authApi.login({ username, password });
@@ -55,29 +119,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     setUser(fullUser);
+    scheduleTokenRefresh(data.access);
+    scheduleLogout(data.refresh);
   };
 
   useEffect(() => {
     const initAuth = async () => {
       const accessToken = localStorage.getItem('access_token');
-      const refreshToken = localStorage.getItem('refresh_token');
+      const storedRefreshToken = localStorage.getItem('refresh_token');
 
       let validToken: string | null = null;
+      let latestRefreshToken: string | null = storedRefreshToken;
 
       if (accessToken && !isTokenExpired(accessToken)) {
         validToken = accessToken;
-      } else if (refreshToken && !isTokenExpired(refreshToken)) {
+      } else if (storedRefreshToken && !isTokenExpired(storedRefreshToken)) {
         try {
-          const { data } = await authApi.refresh(refreshToken);
+          const { data } = await authApi.refresh(storedRefreshToken);
           localStorage.setItem('access_token', data.access);
+          localStorage.setItem('refresh_token', data.refresh);
           validToken = data.access;
+          latestRefreshToken = data.refresh;
         } catch {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
+          latestRefreshToken = null;
         }
       } else {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        latestRefreshToken = null;
       }
 
       if (validToken) {
@@ -88,6 +159,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const fullUser = await fetchUserById(userId);
           if (fullUser) {
             setUser(fullUser);
+            scheduleTokenRefresh(validToken);
+            if (latestRefreshToken) scheduleLogout(latestRefreshToken);
           } else {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
@@ -102,7 +175,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     initAuth();
-  }, []);
+
+    return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
+    };
+  }, [scheduleTokenRefresh, scheduleLogout]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>

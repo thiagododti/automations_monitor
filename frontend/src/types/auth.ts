@@ -10,4 +10,5 @@ export interface TokenResponse {
 
 export interface RefreshResponse {
   access: string;
+  refresh: string;
 }
