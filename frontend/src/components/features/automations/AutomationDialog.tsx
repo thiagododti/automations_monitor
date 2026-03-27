@@ -211,7 +211,7 @@ export function AutomationDialog({ onSuccess, onClose, editData }: AutomationDia
                                             {!isLoadingPositions &&
                                                 posicoes?.map((pos) => (
                                                     <SelectItem key={pos.id} value={String(pos.id)}>
-                                                        {pos.name}
+                                                        {pos.name} - {pos.nivel} - R${pos.cost_hour}/h
                                                     </SelectItem>
                                                 ))}
                                         </SelectContent>

@@ -29,4 +29,6 @@ export interface PositionFilters {
 export interface PositionOption {
     id: number;
     name: string;
+    nivel: PositionsNivel['value'];
+    cost_hour: string;
 }
