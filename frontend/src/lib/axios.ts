@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { isTokenExpired } from './jwt';
+import { navigateTo } from './navigation';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -65,7 +66,7 @@ api.interceptors.response.use(
       if (!refreshToken || isTokenExpired(refreshToken)) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
+        navigateTo('/login');
         return Promise.reject(error);
       }
 
@@ -85,7 +86,7 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
+        navigateTo('/login');
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

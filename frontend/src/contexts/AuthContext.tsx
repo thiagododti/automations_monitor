@@ -3,6 +3,7 @@ import type { User } from '@/types/user';
 import { authApi } from '@/api/auth';
 import { usersApi } from '@/api/users';
 import { decodeJwt, isTokenExpired, getTokenExpiry } from '@/lib/jwt';
+import { navigateTo } from '@/lib/navigation';
 
 export interface AuthContextType {
   user: User | null;
@@ -45,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (refreshToken) {
       authApi.blacklist(refreshToken).catch(() => { });
     }
-    window.location.href = '/login';
+    navigateTo('/login');
   }, []);
 
   const scheduleLogout = useCallback((refreshToken: string) => {
