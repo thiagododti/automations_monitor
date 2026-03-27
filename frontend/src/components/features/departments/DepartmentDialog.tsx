@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useCreateDepartment, useUpdateDepartment } from '@/hooks/useDepartments';
-import type { DepartmentCreate } from '@/types/department';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +11,16 @@ import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Loader2, Plus, Building2, CircleCheck } from 'lucide-react';
+
+const departmentSchema = z.object({
+    name: z.string().min(1, 'Nome e obrigatorio'),
+    description: z.string().optional(),
+    status: z.boolean(),
+});
+
+type DepartmentFormData = z.infer<typeof departmentSchema>;
+
+const defaultValues: DepartmentFormData = { name: '', description: '', status: true };
 
 interface DepartmentDialogProps {
     onSuccess?: () => void;
@@ -25,34 +37,32 @@ export function DepartmentDialog({ onSuccess, onClose, editData }: DepartmentDia
     const [open, setOpen] = useState(false);
     const createMutation = useCreateDepartment();
     const updateMutation = useUpdateDepartment();
-    const [form, setForm] = useState<Partial<DepartmentCreate>>({
-        name: '',
-        description: '',
-        status: true,
+
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm<DepartmentFormData>({
+        resolver: zodResolver(departmentSchema),
+        defaultValues,
     });
 
-    // Abrir dialog e preencher formulário quando editData é fornecido
     useEffect(() => {
         if (editData) {
-            setForm({
+            reset({
                 name: editData.name,
                 description: editData.description || '',
                 status: editData.status ?? true,
             });
             setOpen(true);
         }
-    }, [editData]);
+    }, [editData, reset]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: DepartmentFormData) => {
         try {
             if (editData) {
-                await updateMutation.mutateAsync({ id: editData.id, data: form });
+                await updateMutation.mutateAsync({ id: editData.id, data });
             } else {
-                await createMutation.mutateAsync(form as DepartmentCreate);
+                await createMutation.mutateAsync(data);
             }
             setOpen(false);
-            setForm({ name: '', description: '', status: true });
+            reset(defaultValues);
             onSuccess?.();
         } catch (error) {
             console.error('Erro ao salvar departamento:', error);
@@ -62,7 +72,7 @@ export function DepartmentDialog({ onSuccess, onClose, editData }: DepartmentDia
     const handleOpenChange = (v: boolean) => {
         setOpen(v);
         if (!v) {
-            setForm({ name: '', description: '', status: true });
+            reset(defaultValues);
             onClose?.();
         }
     };
@@ -86,29 +96,25 @@ export function DepartmentDialog({ onSuccess, onClose, editData }: DepartmentDia
                 </DialogHeader>
 
                 <ScrollArea className="max-h-[70vh] pr-1">
-                    <form onSubmit={handleSubmit} className="space-y-5 py-1 pr-3">
-
-                        {/* Informações básicas */}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 py-1 pr-3">
                         <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                Informações Básicas
+                                Informacoes Basicas
                             </p>
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Nome <span className="text-destructive">*</span></Label>
                                 <Input
-                                    value={form.name || ''}
-                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                    {...register('name')}
                                     placeholder="Nome do departamento"
-                                    required
                                     className="bg-secondary border-border"
                                 />
+                                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                             </div>
                             <div className="space-y-1.5">
-                                <Label className="text-sm text-foreground">Descrição</Label>
+                                <Label className="text-sm text-foreground">Descricao</Label>
                                 <Input
-                                    value={form.description || ''}
-                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                    placeholder="Descrição opcional"
+                                    {...register('description')}
+                                    placeholder="Descricao opcional"
                                     className="bg-secondary border-border"
                                 />
                             </div>
@@ -116,7 +122,6 @@ export function DepartmentDialog({ onSuccess, onClose, editData }: DepartmentDia
 
                         <Separator className="bg-border" />
 
-                        {/* Status */}
                         <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                 Status
@@ -126,19 +131,22 @@ export function DepartmentDialog({ onSuccess, onClose, editData }: DepartmentDia
                                     <CircleCheck className="h-4 w-4 text-muted-foreground" />
                                     <div>
                                         <p className="text-sm font-medium text-foreground">Ativo</p>
-                                        <p className="text-xs text-muted-foreground">Indica se o departamento está ativo</p>
+                                        <p className="text-xs text-muted-foreground">Indica se o departamento esta ativo</p>
                                     </div>
                                 </div>
-                                <Switch
-                                    checked={form.status ?? true}
-                                    onCheckedChange={(checked) => setForm({ ...form, status: checked })}
+                                <Controller
+                                    name="status"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                    )}
                                 />
                             </div>
                         </div>
 
                         <Button type="submit" className="w-full mt-2" disabled={isLoading}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {editData ? 'Salvar Alterações' : 'Criar Departamento'}
+                            {editData ? 'Salvar Alteracoes' : 'Criar Departamento'}
                         </Button>
                     </form>
                 </ScrollArea>

@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { useForm, Controller, useFormContext } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useCreateUser, useUpdateUser } from '@/hooks/useUsers';
 import { useDepartmentOptions } from '@/hooks/useDepartments';
-import type { UserCreate, UserUpdate } from '@/types/user';
+import type { UserUpdate } from '@/types/user';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +15,36 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Loader2, Plus, UserRound, ShieldCheck, CircleCheck, Camera, X } from 'lucide-react';
+
+const userFormSchema = z.object({
+    username: z.string().min(1, 'Usuário é obrigatório'),
+    email: z.union([z.string().email('Email inválido'), z.literal('')]).optional(),
+    first_name: z.string().optional().default(''),
+    last_name: z.string().optional().default(''),
+    telephone: z.string().optional().default(''),
+    birthday: z.string().optional().default(''),
+    department: z.number().optional(),
+    is_active: z.boolean(),
+    is_staff: z.boolean(),
+    is_superuser: z.boolean(),
+    password: z.string().optional(),
+});
+
+type UserFormData = z.infer<typeof userFormSchema>;
+
+const defaultValues: UserFormData = {
+    username: '',
+    email: '',
+    first_name: '',
+    last_name: '',
+    telephone: '',
+    birthday: '',
+    department: undefined,
+    is_active: true,
+    is_staff: false,
+    is_superuser: false,
+    password: '',
+};
 
 interface UserDialogProps {
     onSuccess?: () => void;
@@ -32,33 +65,23 @@ interface UserDialogProps {
     };
 }
 
-const emptyForm: Partial<UserCreate> = {
-    username: '',
-    password: '',
-    email: '',
-    first_name: '',
-    last_name: '',
-    telephone: '',
-    birthday: '',
-    department: undefined,
-    is_active: true,
-    is_staff: false,
-    is_superuser: false,
-};
-
 export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
     const [open, setOpen] = useState(false);
     const createMutation = useCreateUser();
     const updateMutation = useUpdateUser();
-    const [form, setForm] = useState<Partial<UserCreate>>(emptyForm);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const [photoFile, setPhotoFile] = useState<File | undefined>(undefined);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { data: departamentos, isLoading: isLoadingDepartments } = useDepartmentOptions(open);
 
-    // Abrir dialog e preencher formulário quando editData é fornecido
+    const { register, handleSubmit, control, reset, setError, formState: { errors } } = useForm<UserFormData>({
+        resolver: zodResolver(userFormSchema),
+        defaultValues,
+    });
+
     useEffect(() => {
         if (editData) {
-            setForm({
+            reset({
                 username: editData.username,
                 email: editData.email,
                 first_name: editData.first_name,
@@ -74,22 +97,50 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
             setPhotoPreview(editData.photo || null);
             setOpen(true);
         }
-    }, [editData]);
+    }, [editData, reset]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: UserFormData) => {
+        if (!editData && !data.password) {
+            setError('password', { message: 'Senha é obrigatória' });
+            return;
+        }
         try {
             if (editData) {
-                const { password, ...rest } = form;
-                const updateData: UserUpdate = { ...rest };
-                if (password) updateData.password = password;
+                const updateData: UserUpdate = {
+                    username: data.username,
+                    email: data.email,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    telephone: data.telephone,
+                    birthday: data.birthday,
+                    department: data.department,
+                    is_active: data.is_active,
+                    is_staff: data.is_staff,
+                    is_superuser: data.is_superuser,
+                };
+                if (data.password) updateData.password = data.password;
+                if (photoFile) updateData.photo = photoFile;
                 await updateMutation.mutateAsync({ id: editData.id, data: updateData });
             } else {
-                await createMutation.mutateAsync(form as UserCreate);
+                await createMutation.mutateAsync({
+                    username: data.username,
+                    email: data.email || '',
+                    first_name: data.first_name || '',
+                    last_name: data.last_name || '',
+                    telephone: data.telephone,
+                    birthday: data.birthday,
+                    department: data.department,
+                    is_active: data.is_active,
+                    is_staff: data.is_staff,
+                    is_superuser: data.is_superuser,
+                    password: data.password!,
+                    photo: photoFile,
+                });
             }
             setOpen(false);
-            setForm(emptyForm);
+            reset(defaultValues);
             setPhotoPreview(null);
+            setPhotoFile(undefined);
             onSuccess?.();
         } catch (error) {
             console.error('Erro ao salvar usuário:', error);
@@ -99,8 +150,9 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
     const handleOpenChange = (v: boolean) => {
         setOpen(v);
         if (!v) {
-            setForm(emptyForm);
+            reset(defaultValues);
             setPhotoPreview(null);
+            setPhotoFile(undefined);
             onClose?.();
         }
     };
@@ -124,15 +176,13 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                 </DialogHeader>
 
                 <ScrollArea className="max-h-[70vh] pr-1">
-                    <form onSubmit={handleSubmit} className="space-y-5 py-1 pr-3">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 py-1 pr-3">
 
                         {/* Informações Básicas */}
                         <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                 Informações Básicas
                             </p>
-
-                            {/* Upload de foto */}
                             <div className="flex items-center gap-4">
                                 <div className="relative">
                                     <Avatar className="h-16 w-16">
@@ -146,7 +196,7 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                                             type="button"
                                             onClick={() => {
                                                 setPhotoPreview(null);
-                                                setForm({ ...form, photo: undefined });
+                                                setPhotoFile(undefined);
                                                 if (fileInputRef.current) fileInputRef.current.value = '';
                                             }}
                                             className="absolute -top-1 -right-1 rounded-full bg-destructive p-0.5 text-destructive-foreground hover:bg-destructive/80"
@@ -164,7 +214,7 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                                         onChange={(e) => {
                                             const file = e.target.files?.[0];
                                             if (file) {
-                                                setForm({ ...form, photo: file });
+                                                setPhotoFile(file);
                                                 setPhotoPreview(URL.createObjectURL(file));
                                             }
                                         }}
@@ -182,46 +232,34 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                                     <p className="text-xs text-muted-foreground">JPG, PNG ou GIF. Máx. 5MB.</p>
                                 </div>
                             </div>
-
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Usuário <span className="text-destructive">*</span></Label>
                                 <Input
-                                    value={form.username || ''}
-                                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                                    {...register('username')}
                                     placeholder="Nome de usuário"
-                                    required
                                     className="bg-secondary border-border"
                                 />
+                                {errors.username && <p className="text-xs text-destructive">{errors.username.message}</p>}
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1.5">
                                     <Label className="text-sm text-foreground">Nome</Label>
-                                    <Input
-                                        value={form.first_name || ''}
-                                        onChange={(e) => setForm({ ...form, first_name: e.target.value })}
-                                        placeholder="Nome"
-                                        className="bg-secondary border-border"
-                                    />
+                                    <Input {...register('first_name')} placeholder="Nome" className="bg-secondary border-border" />
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label className="text-sm text-foreground">Sobrenome</Label>
-                                    <Input
-                                        value={form.last_name || ''}
-                                        onChange={(e) => setForm({ ...form, last_name: e.target.value })}
-                                        placeholder="Sobrenome"
-                                        className="bg-secondary border-border"
-                                    />
+                                    <Input {...register('last_name')} placeholder="Sobrenome" className="bg-secondary border-border" />
                                 </div>
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Email</Label>
                                 <Input
                                     type="email"
-                                    value={form.email || ''}
-                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                    {...register('email')}
                                     placeholder="email@exemplo.com"
                                     className="bg-secondary border-border"
                                 />
+                                {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
                             </div>
                         </div>
 
@@ -235,44 +273,37 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1.5">
                                     <Label className="text-sm text-foreground">Telefone</Label>
-                                    <Input
-                                        value={form.telephone || ''}
-                                        onChange={(e) => setForm({ ...form, telephone: e.target.value })}
-                                        placeholder="(00) 00000-0000"
-                                        className="bg-secondary border-border"
-                                    />
+                                    <Input {...register('telephone')} placeholder="(00) 00000-0000" className="bg-secondary border-border" />
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label className="text-sm text-foreground">Data de Nascimento</Label>
-                                    <Input
-                                        type="date"
-                                        value={form.birthday || ''}
-                                        onChange={(e) => setForm({ ...form, birthday: e.target.value })}
-                                        className="bg-secondary border-border"
-                                    />
+                                    <Input type="date" {...register('birthday')} className="bg-secondary border-border" />
                                 </div>
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Departamento</Label>
-                                <Select
-                                    value={form.department ? String(form.department) : 'none'}
-                                    onValueChange={(val) =>
-                                        setForm({ ...form, department: val === 'none' ? undefined : Number(val) })
-                                    }
-                                >
-                                    <SelectTrigger className="bg-secondary border-border w-full">
-                                        <SelectValue placeholder="Selecione um departamento" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">Nenhum</SelectItem>
-                                        {!isLoadingDepartments &&
-                                            departamentos?.map((dept) => (
-                                                <SelectItem key={dept.id} value={String(dept.id)}>
-                                                    {dept.name}
-                                                </SelectItem>
-                                            ))}
-                                    </SelectContent>
-                                </Select>
+                                <Controller
+                                    name="department"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            value={field.value ? String(field.value) : 'none'}
+                                            onValueChange={(val) => field.onChange(val === 'none' ? undefined : Number(val))}
+                                        >
+                                            <SelectTrigger className="bg-secondary border-border w-full">
+                                                <SelectValue placeholder="Selecione um departamento" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="none">Nenhum</SelectItem>
+                                                {!isLoadingDepartments && departamentos?.map((dept) => (
+                                                    <SelectItem key={dept.id} value={String(dept.id)}>
+                                                        {dept.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
                             </div>
                         </div>
 
@@ -291,10 +322,9 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                                         <p className="text-xs text-muted-foreground">Permite que o usuário acesse o sistema</p>
                                     </div>
                                 </div>
-                                <Switch
-                                    checked={form.is_active ?? true}
-                                    onCheckedChange={(checked) => setForm({ ...form, is_active: checked })}
-                                />
+                                <Controller name="is_active" control={control} render={({ field }) => (
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                )} />
                             </div>
                             <div className="flex items-center justify-between rounded-lg border border-border bg-secondary/50 px-4 py-3">
                                 <div className="flex items-center gap-2">
@@ -304,10 +334,9 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                                         <p className="text-xs text-muted-foreground">Concede acesso à área administrativa</p>
                                     </div>
                                 </div>
-                                <Switch
-                                    checked={form.is_staff ?? false}
-                                    onCheckedChange={(checked) => setForm({ ...form, is_staff: checked })}
-                                />
+                                <Controller name="is_staff" control={control} render={({ field }) => (
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                )} />
                             </div>
                             <div className="flex items-center justify-between rounded-lg border border-border bg-secondary/50 px-4 py-3">
                                 <div className="flex items-center gap-2">
@@ -317,10 +346,9 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                                         <p className="text-xs text-muted-foreground">Concede acesso total ao sistema</p>
                                     </div>
                                 </div>
-                                <Switch
-                                    checked={form.is_superuser ?? false}
-                                    onCheckedChange={(checked) => setForm({ ...form, is_superuser: checked })}
-                                />
+                                <Controller name="is_superuser" control={control} render={({ field }) => (
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                )} />
                             </div>
                         </div>
 
@@ -339,12 +367,11 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
                                 </Label>
                                 <Input
                                     type="password"
-                                    value={form.password || ''}
-                                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                                    {...register('password')}
                                     placeholder={editData ? '••••••••' : 'Senha'}
-                                    required={!editData}
                                     className="bg-secondary border-border"
                                 />
+                                {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
                             </div>
                         </div>
 

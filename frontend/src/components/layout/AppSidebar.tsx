@@ -32,7 +32,8 @@ const cadastrosItems = [
   { label: 'Empresas', icon: Store, href: '/businesses' },
   { label: 'Cargos', icon: BriefcaseBusiness, href: '/positions' },
   { label: 'Usuários', icon: Users, href: '/users' },
-  { label: 'Automações', icon: Cpu, href: '/automations' }
+  { label: 'Automações', icon: Cpu, href: '/automations' },
+  { label: 'Departamentos', icon: Users, href: '/departments' },
 ];
 
 export function AppSidebar() {

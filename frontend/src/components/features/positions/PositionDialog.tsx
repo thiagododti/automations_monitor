@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useCreatePosition, useUpdatePosition, usePositionNivels } from '@/hooks/usePositions';
-import type { PositionCreate } from '@/types/position';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Loader2, Plus, BriefcaseBusiness } from 'lucide-react';
+
+const positionSchema = z.object({
+    name: z.string().min(1, 'Nome é obrigatório'),
+    description: z.string().optional().default(''),
+    nivel: z.string().min(1, 'Nível é obrigatório'),
+    cost_hour: z.string().min(1, 'Custo por hora é obrigatório'),
+});
+
+type PositionFormData = z.infer<typeof positionSchema>;
+
+const defaultValues: PositionFormData = { name: '', description: '', nivel: '', cost_hour: '' };
 
 interface PositionDialogProps {
     onSuccess?: () => void;
@@ -22,23 +35,20 @@ interface PositionDialogProps {
     };
 }
 
-const emptyForm: PositionCreate = {
-    name: '',
-    description: '',
-    nivel: '',
-    cost_hour: '',
-};
-
 export function PositionDialog({ onSuccess, onClose, editData }: PositionDialogProps) {
     const [open, setOpen] = useState(false);
     const createMutation = useCreatePosition();
     const updateMutation = useUpdatePosition();
-    const [form, setForm] = useState<PositionCreate>(emptyForm);
     const { data: nivels, isLoading: isLoadingNivels } = usePositionNivels(open);
+
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm<PositionFormData>({
+        resolver: zodResolver(positionSchema),
+        defaultValues,
+    });
 
     useEffect(() => {
         if (editData) {
-            setForm({
+            reset({
                 name: editData.name,
                 description: editData.description || '',
                 nivel: editData.nivel,
@@ -46,18 +56,17 @@ export function PositionDialog({ onSuccess, onClose, editData }: PositionDialogP
             });
             setOpen(true);
         }
-    }, [editData]);
+    }, [editData, reset]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: PositionFormData) => {
         try {
             if (editData) {
-                await updateMutation.mutateAsync({ id: editData.id, data: form });
+                await updateMutation.mutateAsync({ id: editData.id, data });
             } else {
-                await createMutation.mutateAsync(form);
+                await createMutation.mutateAsync(data);
             }
             setOpen(false);
-            setForm(emptyForm);
+            reset(defaultValues);
             onSuccess?.();
         } catch (error) {
             console.error('Erro ao salvar cargo:', error);
@@ -67,7 +76,7 @@ export function PositionDialog({ onSuccess, onClose, editData }: PositionDialogP
     const handleOpenChange = (v: boolean) => {
         setOpen(v);
         if (!v) {
-            setForm(emptyForm);
+            reset(defaultValues);
             onClose?.();
         }
     };
@@ -91,7 +100,7 @@ export function PositionDialog({ onSuccess, onClose, editData }: PositionDialogP
                 </DialogHeader>
 
                 <ScrollArea className="max-h-[70vh] pr-1">
-                    <form onSubmit={handleSubmit} className="space-y-5 py-1 pr-3">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 py-1 pr-3">
                         <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                 Informações Básicas
@@ -99,18 +108,16 @@ export function PositionDialog({ onSuccess, onClose, editData }: PositionDialogP
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Nome <span className="text-destructive">*</span></Label>
                                 <Input
-                                    value={form.name}
-                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                    {...register('name')}
                                     placeholder="Nome do cargo"
-                                    required
                                     className="bg-secondary border-border"
                                 />
+                                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Descrição</Label>
                                 <Input
-                                    value={form.description}
-                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                    {...register('description')}
                                     placeholder="Descrição do cargo"
                                     className="bg-secondary border-border"
                                 />
@@ -125,23 +132,29 @@ export function PositionDialog({ onSuccess, onClose, editData }: PositionDialogP
                             </p>
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Nível <span className="text-destructive">*</span></Label>
-                                <Select
-                                    value={form.nivel || 'none'}
-                                    onValueChange={(val) => setForm({ ...form, nivel: val === 'none' ? '' : val })}
-                                >
-                                    <SelectTrigger className="bg-secondary border-border w-full">
-                                        <SelectValue placeholder="Selecione um nível" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">Selecione</SelectItem>
-                                        {!isLoadingNivels &&
-                                            nivels?.map((nivel) => (
-                                                <SelectItem key={nivel.value} value={nivel.value}>
-                                                    {nivel.display}
-                                                </SelectItem>
-                                            ))}
-                                    </SelectContent>
-                                </Select>
+                                <Controller
+                                    name="nivel"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            value={field.value || 'none'}
+                                            onValueChange={(val) => field.onChange(val === 'none' ? '' : val)}
+                                        >
+                                            <SelectTrigger className="bg-secondary border-border w-full">
+                                                <SelectValue placeholder="Selecione um nível" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="none">Selecione</SelectItem>
+                                                {!isLoadingNivels && nivels?.map((nivel) => (
+                                                    <SelectItem key={nivel.value} value={nivel.value}>
+                                                        {nivel.display}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                                {errors.nivel && <p className="text-xs text-destructive">{errors.nivel.message}</p>}
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-sm text-foreground">Custo por Hora <span className="text-destructive">*</span></Label>
@@ -149,12 +162,11 @@ export function PositionDialog({ onSuccess, onClose, editData }: PositionDialogP
                                     type="number"
                                     min="0"
                                     step="0.01"
-                                    value={form.cost_hour}
-                                    onChange={(e) => setForm({ ...form, cost_hour: e.target.value })}
+                                    {...register('cost_hour')}
                                     placeholder="0.00"
-                                    required
                                     className="bg-secondary border-border"
                                 />
+                                {errors.cost_hour && <p className="text-xs text-destructive">{errors.cost_hour.message}</p>}
                             </div>
                         </div>
 
