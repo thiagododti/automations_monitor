@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useTableState } from '@/hooks/useTableState';
 import { useBusinesses } from '@/hooks/useBusiness';
 import type { Business, BusinessFilters } from '@/types/business';
 import { PaginationControls } from '@/components/shared/PaginationControls';
@@ -14,15 +15,10 @@ const filterFields: FilterField[] = [
 ];
 
 export default function BusinessesPage() {
-    const [filters, setFilters] = useState<BusinessFilters>({});
-    const [page, setPage] = useState(1);
+    const { filters, page, setPage, handleFilter, handleClear } = useTableState<BusinessFilters>();
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
 
     const { data, isLoading } = useBusinesses(filters, page);
-
-    useEffect(() => {
-        setPage(1);
-    }, [filters]);
 
     const handleEditBusiness = (business: Business) => {
         setEditingBusiness(business);
@@ -48,8 +44,8 @@ export default function BusinessesPage() {
 
             <FilterBar
                 fields={filterFields}
-                onFilter={(v) => setFilters(v as BusinessFilters)}
-                onClear={() => setFilters({})}
+                onFilter={handleFilter}
+                onClear={handleClear}
             />
 
             <BusinessTable data={data} isLoading={isLoading} onEdit={handleEditBusiness} />

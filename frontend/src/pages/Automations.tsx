@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTableState } from '@/hooks/useTableState';
 import { useAutomations } from '@/hooks/useAutomations';
 import type { AutomationFilters, Automation } from '@/types/automation';
 import { PaginationControls } from '@/components/shared/PaginationControls';
@@ -13,15 +14,10 @@ const filterFields: FilterField[] = [
 ];
 
 export default function AutomationsPage() {
-  const [filters, setFilters] = useState<AutomationFilters>({});
-  const [page, setPage] = useState(1);
+  const { filters, page, setPage, handleFilter, handleClear } = useTableState<AutomationFilters>();
   const [editingAutomation, setEditingAutomation] = useState<Automation | null>(null);
 
   const { data, isLoading } = useAutomations(filters, page);
-
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
 
   const handleEditAutomation = (automation: Automation) => {
     setEditingAutomation(automation);
@@ -47,8 +43,8 @@ export default function AutomationsPage() {
 
       <FilterBar
         fields={filterFields}
-        onFilter={(v) => setFilters(v as AutomationFilters)}
-        onClear={() => setFilters({})}
+        onFilter={handleFilter}
+        onClear={handleClear}
       />
 
       <AutomationTable data={data} isLoading={isLoading} onEdit={handleEditAutomation} />

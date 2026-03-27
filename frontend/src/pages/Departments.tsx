@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTableState } from '@/hooks/useTableState';
 import { useDepartments } from '@/hooks/useDepartments';
 import type { DepartmentFilters, Department } from '@/types/department';
 import { PaginationControls } from '@/components/shared/PaginationControls';
@@ -12,15 +13,10 @@ const filterFields: FilterField[] = [
 ];
 
 export default function DepartmentsPage() {
-  const [filters, setFilters] = useState<DepartmentFilters>({});
-  const [page, setPage] = useState(1);
+  const { filters, page, setPage, handleFilter, handleClear } = useTableState<DepartmentFilters>();
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
 
   const { data, isLoading } = useDepartments(filters, page);
-
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
 
   const handleEditDepartment = (department: Department) => {
     setEditingDepartment(department);
@@ -42,8 +38,8 @@ export default function DepartmentsPage() {
 
       <FilterBar
         fields={filterFields}
-        onFilter={(v) => setFilters(v)}
-        onClear={() => setFilters({})}
+        onFilter={handleFilter}
+        onClear={handleClear}
       />
 
       <DepartmentTable data={data} isLoading={isLoading} onEdit={handleEditDepartment} />

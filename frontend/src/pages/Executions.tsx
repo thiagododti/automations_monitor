@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useTableState } from '@/hooks/useTableState';
 import { useExecutions } from '@/hooks/useExecutions';
 import type { ExecutionFilters } from '@/types/execution';
 import { PaginationControls } from '@/components/shared/PaginationControls';
@@ -14,11 +14,8 @@ const filterFields: FilterField[] = [
 ];
 
 export default function ExecutionsPage() {
-  const [filters, setFilters] = useState<ExecutionFilters>({});
-  const [page, setPage] = useState(1);
+  const { filters, page, setPage, handleFilter, handleClear } = useTableState<ExecutionFilters>();
   const { data, isLoading } = useExecutions(filters, page);
-
-  useEffect(() => { setPage(1); }, [filters]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -29,8 +26,8 @@ export default function ExecutionsPage() {
 
       <FilterBar
         fields={filterFields}
-        onFilter={(v) => setFilters(v as ExecutionFilters)}
-        onClear={() => setFilters({})}
+        onFilter={handleFilter}
+        onClear={handleClear}
       />
 
       <ExecutionTable data={data} isLoading={isLoading} />

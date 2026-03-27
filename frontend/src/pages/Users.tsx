@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTableState } from '@/hooks/useTableState';
 import { useUsers } from '@/hooks/useUsers';
 import type { UserFilters, User } from '@/types/user';
 import { PaginationControls } from '@/components/shared/PaginationControls';
@@ -14,15 +15,10 @@ const filterFields: FilterField[] = [
 ];
 
 export default function UsersPage() {
-  const [filters, setFilters] = useState<UserFilters>({});
-  const [page, setPage] = useState(1);
+  const { filters, page, setPage, handleFilter, handleClear } = useTableState<UserFilters>();
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const { data, isLoading } = useUsers(filters, page);
-
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
 
   const handleEditUser = (user: User) => {
     setEditingUser(user);
@@ -44,8 +40,8 @@ export default function UsersPage() {
 
       <FilterBar
         fields={filterFields}
-        onFilter={(v) => setFilters(v as UserFilters)}
-        onClear={() => setFilters({})}
+        onFilter={handleFilter}
+        onClear={handleClear}
       />
 
       <UserTable data={data} isLoading={isLoading} onEdit={handleEditUser} />

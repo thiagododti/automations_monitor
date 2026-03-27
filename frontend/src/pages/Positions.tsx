@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTableState } from '@/hooks/useTableState';
 import { usePositions, usePositionNivels } from '@/hooks/usePositions';
 import type { PositionFilters, Position } from '@/types/position';
 import { PaginationControls } from '@/components/shared/PaginationControls';
@@ -8,8 +9,7 @@ import { PositionTable } from '@/components/features/positions/PositionTable';
 import { DescriptionFilter, NameFilter, PositionNivelsFilter } from '@/filters/filters';
 
 export default function PositionsPage() {
-    const [filters, setFilters] = useState<PositionFilters>({});
-    const [page, setPage] = useState(1);
+    const { filters, page, setPage, handleFilter, handleClear } = useTableState<PositionFilters>();
     const [editingPosition, setEditingPosition] = useState<Position | null>(null);
 
     const { data, isLoading } = usePositions(filters, page);
@@ -26,10 +26,6 @@ export default function PositionsPage() {
             options: (nivels || []).map((nivel) => ({ label: nivel.display, value: nivel.value })),
         },
     ];
-
-    useEffect(() => {
-        setPage(1);
-    }, [filters]);
 
     const handleEditPosition = (position: Position) => {
         setEditingPosition(position);
@@ -51,8 +47,8 @@ export default function PositionsPage() {
 
             <FilterBar
                 fields={filterFields}
-                onFilter={(v) => setFilters(v as PositionFilters)}
-                onClear={() => setFilters({})}
+                onFilter={handleFilter}
+                onClear={handleClear}
             />
 
             <PositionTable data={data} isLoading={isLoading} onEdit={handleEditPosition} />
