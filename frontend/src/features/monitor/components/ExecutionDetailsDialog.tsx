@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Loader2, Bot, User, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { automationsApi } from '@/features/automations/api';
-import { executionsApi } from '@/features/executions/api';
-import { logsApi } from '@/features/logs/api';
-import { stepsApi } from '@/features/steps/api';
+import { useExecution } from '@/features/executions/hooks';
+import { useAutomation } from '@/features/automations/hooks';
+import { useExecutionLogs } from '@/features/logs/hooks';
+import { useExecutionSteps } from '@/features/steps/hooks';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { LogTable } from '@/features/logs/components/LogTable';
 import { StepTable } from '@/features/steps/components/StepTable';
@@ -38,45 +37,33 @@ export function ExecutionDetailsDialog({ automationStatus, open, onOpenChange }:
     const [stepsPage, setStepsPage] = useState(1);
     const [logsPage, setLogsPage] = useState(1);
 
+    // Passa id=0 quando o dialog está fechado — os hooks têm enabled:!!id internamente
+    const activeExecutionId = open ? executionId : 0;
+    const activeAutomationId = open ? automationId : 0;
+
     const {
         data: execution,
         isLoading: isExecutionLoading,
         isError: isExecutionError,
-    } = useQuery({
-        queryKey: ['executions', 'detail', executionId],
-        queryFn: () => executionsApi.getById(executionId).then((res) => res.data),
-        enabled: open && !!executionId,
-    });
+    } = useExecution(activeExecutionId);
 
     const {
         data: automation,
         isLoading: isAutomationLoading,
         isError: isAutomationError,
-    } = useQuery({
-        queryKey: ['automations', 'detail', automationId],
-        queryFn: () => automationsApi.getById(automationId).then((res) => res.data),
-        enabled: open && !!automationId,
-    });
+    } = useAutomation(activeAutomationId);
 
     const {
         data: logsData,
         isLoading: isLogsLoading,
         isError: isLogsError,
-    } = useQuery({
-        queryKey: ['executions', executionId, 'logs', logsPage],
-        queryFn: () => logsApi.list({ execution: String(executionId), page: logsPage }).then((res) => res.data),
-        enabled: open && !!executionId,
-    });
+    } = useExecutionLogs(activeExecutionId, logsPage);
 
     const {
         data: stepsData,
         isLoading: isStepsLoading,
         isError: isStepsError,
-    } = useQuery({
-        queryKey: ['executions', executionId, 'steps', stepsPage],
-        queryFn: () => stepsApi.list({ execution: String(executionId), page: stepsPage }).then((res) => res.data),
-        enabled: open && !!executionId,
-    });
+    } = useExecutionSteps(activeExecutionId, stepsPage);
 
     const isOverviewLoading = (isExecutionLoading || isAutomationLoading) && !execution && !automation;
 

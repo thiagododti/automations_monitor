@@ -6,7 +6,7 @@ import { useEvolution, useKpis, useKpisByAutomation } from '@/features/dashboard
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { FilterBar } from '@/shared/components/FilterBar';
 import type { FilterField } from '@/shared/types/filters';
-import type { EvolutionFilters, KPiFilters, KpisByAutomationFilters } from '@/features/dashboard/types';
+import type { EvolutionFilters, KpiFilters, KpisByAutomationFilters } from '@/features/dashboard/types';
 import { dashboardStatusFilter, dashboardDateFromFilter, dashboardDateToFilter } from '@/features/dashboard';
 import { type GroupBy, formatCurrency, formatPercent, formatCompactSeconds } from '@/lib/formatters';
 import { StatCard } from '@/features/dashboard/components/StatCard';
@@ -32,7 +32,7 @@ export default function DashboardKpiPage() {
     const { data: businessOptions = [] } = useBusinessOptions(true);
     const { data: automationsData } = useAutomations(undefined, 1);
 
-    const kpiFilters = useMemo<KPiFilters>(
+    const kpiFilters = useMemo<KpiFilters>(
         () => ({
             business: filters.business,
             automation: filters.automation,

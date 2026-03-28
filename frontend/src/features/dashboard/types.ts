@@ -44,6 +44,6 @@ export interface KpisByAutomationFilters {
     date_to?: string;
 }
 
-export interface KPiFilters extends KpisByAutomationFilters {
+export interface KpiFilters extends KpisByAutomationFilters {
     automation?: number;
 }
