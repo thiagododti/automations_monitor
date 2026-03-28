@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import type { Step, StepCreate, StepFilters } from './types';
-import type { PaginatedResponse } from '@/types/api';
+import type { PaginatedResponse } from '@/shared/types/api';
 
 export const stepsApi = {
     list: (filters?: StepFilters & { page?: number }) =>

@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import type { User } from '@/features/users/types';
 import { authApi } from '@/features/auth/api';
 import { usersApi } from '@/features/users/api';
@@ -28,7 +27,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const navigate = useNavigate();
 
   const logout = useCallback(() => {
     if (logoutTimerRef.current) {
@@ -42,8 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (refreshToken) {
       authApi.blacklist(refreshToken).catch(() => { });
     }
-    navigate('/login');
-  }, [navigate]);
+  }, []);
 
   const scheduleLogout = useCallback((refreshToken: string) => {
     if (logoutTimerRef.current) {

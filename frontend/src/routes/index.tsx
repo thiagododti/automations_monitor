@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AppLayout } from '@/shared/layout/AppLayout';
+import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 
 const Login = lazy(() => import('@/pages/Login'));
 const NotFoundPage = lazy(() => import('@/pages/NotFound'));
@@ -26,27 +27,29 @@ const FullPageLoader = () => (
 
 export function AppRoutes() {
   return (
-    <Suspense fallback={<FullPageLoader />}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/monitoramento" element={<MonitorPage />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/departments" element={<DepartmentsPage />} />
-            <Route path="/businesses" element={<BusinessesPage />} />
-            <Route path="/automations" element={<AutomationsPage />} />
-            <Route path="/executions" element={<ExecutionsPage />} />
-            <Route path="/executions/:id" element={<ExecutionDetailPage />} />
-            <Route path="/logs" element={<LogsPage />} />
-            <Route path="/steps" element={<StepsPage />} />
-            <Route path="/positions" element={<PositionsPage />} />
+    <ErrorBoundary>
+      <Suspense fallback={<FullPageLoader />}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/monitor" element={<MonitorPage />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/departments" element={<DepartmentsPage />} />
+              <Route path="/businesses" element={<BusinessesPage />} />
+              <Route path="/automations" element={<AutomationsPage />} />
+              <Route path="/executions" element={<ExecutionsPage />} />
+              <Route path="/executions/:id" element={<ExecutionDetailPage />} />
+              <Route path="/logs" element={<LogsPage />} />
+              <Route path="/steps" element={<StepsPage />} />
+              <Route path="/positions" element={<PositionsPage />} />
+            </Route>
           </Route>
-        </Route>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Suspense>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }

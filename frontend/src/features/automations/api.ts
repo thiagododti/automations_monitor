@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import type { Automation, AutomationCreate, AutomationUpdate, AutomationFilters, AutomationsStatus } from './types';
-import type { PaginatedResponse } from '@/types/api';
+import type { PaginatedResponse } from '@/shared/types/api';
 
 export const automationsApi = {
     list: (filters?: AutomationFilters & { page?: number }) =>

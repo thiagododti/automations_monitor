@@ -3,6 +3,7 @@ import { Bot, Loader2, User } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { StatusBadge } from '@/shared/components/StatusBadge';
+import { EfficiencyBadge } from '@/shared/components/EfficiencyBadge';
 import type { Step } from '../types';
 import { formatSeconds, formatCurrency } from '@/lib/formatters';
 
@@ -12,21 +13,6 @@ interface StepTableProps {
         count: number;
     } | undefined;
     isLoading: boolean;
-}
-
-function EfficiencyBadge({ value }: { value: string }) {
-    const num = parseFloat(value);
-    const colorClass =
-        num >= 100
-            ? 'text-green-500 bg-green-500/10'
-            : num >= 50
-                ? 'text-yellow-500 bg-yellow-500/10'
-                : 'text-destructive bg-destructive/10';
-    return (
-        <span className={`inline-flex items-center rounded px-1.5 py-0.5 font-mono text-xs tabular-nums font-semibold ${colorClass}`}>
-            {isNaN(num) ? value : `${num.toFixed(1)}%`}
-        </span>
-    );
 }
 
 function Tip({ children, content }: { children: React.ReactNode; content: React.ReactNode }) {

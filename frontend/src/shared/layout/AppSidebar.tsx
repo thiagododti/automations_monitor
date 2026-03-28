@@ -19,7 +19,7 @@ import { useState } from 'react';
 
 const topItems = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-  { label: 'Monitoramento', icon: Activity, href: '/monitoramento' },
+  { label: 'Monitoramento', icon: Activity, href: '/monitor' },
 ];
 
 const executionItems = [

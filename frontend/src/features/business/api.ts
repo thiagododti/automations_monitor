@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import type { Business, BusinessCreate, BusinessUpdate, BusinessFilters, BusinessOption } from "./types";
-import type { PaginatedResponse } from "@/types/api";
+import type { PaginatedResponse } from "@/shared/types/api";
 
 function buildFormData(data: BusinessCreate | BusinessUpdate): FormData {
     const formData = new FormData();

@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import type { User, UserCreate, UserUpdate, UserFilters, Token, TokenCreate, TokenRegenerate } from './types';
-import type { PaginatedResponse } from '@/types/api';
+import type { PaginatedResponse } from '@/shared/types/api';
 
 function buildUserFormData(data: UserCreate | UserUpdate): FormData {
     const formData = new FormData();

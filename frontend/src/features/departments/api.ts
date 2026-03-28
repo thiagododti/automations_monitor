@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import type { Department, DepartmentCreate, DepartmentUpdate, DepartmentFilters, DepartmentOption } from "./types";
-import type { PaginatedResponse } from "@/types/api";
+import type { PaginatedResponse } from "@/shared/types/api";
 
 export const departmentsApi = {
     list: (filters?: DepartmentFilters & { page?: number }) =>

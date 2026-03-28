@@ -1,6 +1,6 @@
 import api from '@/lib/axios';
 import type { Execution, ExecutionCreate, ExecutionUpdate, ExecutionFilters } from './types';
-import type { PaginatedResponse } from '@/types/api';
+import type { PaginatedResponse } from '@/shared/types/api';
 
 export const executionsApi = {
     list: (filters?: ExecutionFilters & { page?: number }) =>

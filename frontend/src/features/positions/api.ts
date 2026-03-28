@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import type { Position, PositionCreate, PositionUpdate, PositionFilters, PositionOption, PositionsNivel } from "./types";
-import type { PaginatedResponse } from "@/types/api";
+import type { PaginatedResponse } from "@/shared/types/api";
 
 export const positionsApi = {
     list: (filters?: PositionFilters & { page?: number }) =>

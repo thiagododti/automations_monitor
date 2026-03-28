@@ -3,10 +3,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogTable } from '@/features/logs/components/LogTable';
 import { StepTable } from '@/features/steps/components/StepTable';
 import { PaginationControls } from '@/shared/components/PaginationControls';
-import { DetailItem } from './ExecutionDetailCards';
+import { DetailItem } from '@/shared/components/DetailItem';
 import { formatSeconds, formatCurrency, formatDateTime } from '@/lib/formatters';
 import type { Execution } from '../types';
-import type { PaginatedResponse } from '@/types/api';
+import type { PaginatedResponse } from '@/shared/types/api';
 import type { Log } from '@/features/logs/types';
 import type { Step } from '@/features/steps/types';
 

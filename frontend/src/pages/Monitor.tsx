@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { DashboardStats } from '@/features/dashboard/components/DashboardStats';
 import { AutomationStatusMonitor } from '@/features/monitor/components/AutomationStatusMonitor';
 
-export default function Dashboard() {
+export default function MonitorPage() {
   const {
     data: statusData,
     isLoading: loadingStatus,

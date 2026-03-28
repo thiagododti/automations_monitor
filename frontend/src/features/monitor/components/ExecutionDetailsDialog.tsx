@@ -19,6 +19,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DetailItem } from '@/shared/components/DetailItem';
+import { EfficiencyBadge } from '@/shared/components/EfficiencyBadge';
 import type { AutomationsStatus } from '@/features/automations/types';
 import { formatSeconds, formatCurrency, formatDateTime } from '@/lib/formatters';
 
@@ -26,38 +28,6 @@ interface ExecutionDetailsDialogProps {
     automationStatus: AutomationsStatus | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
-}
-
-interface DetailItemProps {
-    label: string;
-    value: string;
-    mono?: boolean;
-}
-
-
-
-function DetailItem({ label, value, mono = false }: DetailItemProps) {
-    return (
-        <div className="rounded-md border border-border/70 bg-secondary/30 p-3">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-            <p className={`mt-1 text-sm text-foreground ${mono ? 'font-mono tabular-nums' : ''}`}>{value}</p>
-        </div>
-    );
-}
-
-function EfficiencyBadge({ value }: { value: string }) {
-    const num = parseFloat(value);
-    const colorClass =
-        num >= 100
-            ? 'text-green-500'
-            : num >= 50
-                ? 'text-yellow-500'
-                : 'text-destructive';
-    return (
-        <span className={`font-mono tabular-nums font-semibold ${colorClass}`}>
-            {isNaN(num) ? value : `${num.toFixed(1)}%`}
-        </span>
-    );
 }
 
 export function ExecutionDetailsDialog({ automationStatus, open, onOpenChange }: ExecutionDetailsDialogProps) {
