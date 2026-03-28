@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -35,7 +35,6 @@ interface UseDepartmentFormProps {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useDepartmentForm({ editData, onSuccess, onClose }: UseDepartmentFormProps) {
-    const [open, setOpen] = useState(false);
     const createMutation = useCreateDepartment();
     const updateMutation = useUpdateDepartment();
 
@@ -53,7 +52,6 @@ export function useDepartmentForm({ editData, onSuccess, onClose }: UseDepartmen
                 description: editData.description || '',
                 status: editData.status ?? true,
             });
-            setOpen(true);
         }
     }, [editData, reset]);
 
@@ -64,7 +62,6 @@ export function useDepartmentForm({ editData, onSuccess, onClose }: UseDepartmen
             } else {
                 await createMutation.mutateAsync(data);
             }
-            setOpen(false);
             reset(defaultValues);
             onSuccess?.();
         } catch (error) {
@@ -73,18 +70,14 @@ export function useDepartmentForm({ editData, onSuccess, onClose }: UseDepartmen
         }
     };
 
-    const handleOpenChange = (v: boolean) => {
-        setOpen(v);
-        if (!v) {
-            reset(defaultValues);
-            onClose?.();
-        }
+    const onDialogClose = () => {
+        reset(defaultValues);
+        onClose?.();
     };
 
     return {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading: createMutation.isPending || updateMutation.isPending,
         onSubmit: handleSubmit(submitHandler),
     };

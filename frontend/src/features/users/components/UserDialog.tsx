@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { useUserForm } from '../hooks';
 import type { UserEditData } from '../hooks';
@@ -19,10 +20,20 @@ interface UserDialogProps {
 }
 
 export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        if (editData) setOpen(true);
+    }, [editData]);
+
+    const handleSuccess = () => {
+        setOpen(false);
+        onSuccess?.();
+    };
+
     const {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading,
         departamentos,
         isLoadingDepartments,
@@ -32,7 +43,12 @@ export function UserDialog({ onSuccess, onClose, editData }: UserDialogProps) {
         setPhotoFile,
         fileInputRef,
         onSubmit,
-    } = useUserForm({ editData, onSuccess, onClose });
+    } = useUserForm({ open, editData, onSuccess: handleSuccess, onClose });
+
+    const handleOpenChange = (v: boolean) => {
+        setOpen(v);
+        if (!v) onDialogClose();
+    };
 
     const { register, control, formState: { errors } } = form;
 

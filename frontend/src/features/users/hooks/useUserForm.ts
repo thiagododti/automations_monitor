@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -60,13 +60,13 @@ export interface UserEditData {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 interface UseUserFormProps {
+    open: boolean;
     editData?: UserEditData;
     onSuccess?: () => void;
     onClose?: () => void;
 }
 
-export function useUserForm({ editData, onSuccess, onClose }: UseUserFormProps) {
-    const [open, setOpen] = useState(false);
+export function useUserForm({ open, editData, onSuccess, onClose }: UseUserFormProps) {
     const qc = useQueryClient();
     const createMutation = useMutation({
         mutationFn: (data: UserCreate) => usersApi.create(data),
@@ -102,7 +102,6 @@ export function useUserForm({ editData, onSuccess, onClose }: UseUserFormProps) 
                 password: '',
             });
             photo.setPhotoPreview(editData.photo || null);
-            setOpen(true);
         }
     }, [editData, reset]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -144,7 +143,6 @@ export function useUserForm({ editData, onSuccess, onClose }: UseUserFormProps) 
                     photo: photo.photoFile,
                 });
             }
-            setOpen(false);
             reset(defaultValues);
             photo.resetPhoto();
             onSuccess?.();
@@ -154,19 +152,15 @@ export function useUserForm({ editData, onSuccess, onClose }: UseUserFormProps) 
         }
     };
 
-    const handleOpenChange = (v: boolean) => {
-        setOpen(v);
-        if (!v) {
-            reset(defaultValues);
-            photo.resetPhoto();
-            onClose?.();
-        }
+    const onDialogClose = () => {
+        reset(defaultValues);
+        photo.resetPhoto();
+        onClose?.();
     };
 
     return {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading: createMutation.isPending || updateMutation.isPending,
         departamentos,
         isLoadingDepartments,

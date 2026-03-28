@@ -16,7 +16,6 @@ import { cn } from '@/lib/utils';
 import { formatManualTime, formatCurrency } from '@/lib/formatters';
 import type { Automation } from '../types';
 import { toast } from 'sonner';
-import { useAuth } from '@/features/auth/hooks';
 import { useClearTestExecutions } from '@/features/executions/hooks';
 
 interface AutomationTableProps {
@@ -25,12 +24,11 @@ interface AutomationTableProps {
         count: number;
     } | undefined;
     isLoading: boolean;
+    isStaff: boolean;
     onEdit: (automation: Automation) => void;
 }
 
-export function AutomationTable({ data, isLoading, onEdit }: AutomationTableProps) {
-    const { user } = useAuth();
-    const isStaff = user?.is_staff === true;
+export function AutomationTable({ data, isLoading, isStaff, onEdit }: AutomationTableProps) {
     const clearTestExecutions = useClearTestExecutions();
     const [clearTargetId, setClearTargetId] = useState<number | null>(null);
     const [clearTargetName, setClearTargetName] = useState<string>('');

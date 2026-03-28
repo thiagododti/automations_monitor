@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { useAutomationForm } from '../hooks';
 import type { AutomationEditData } from '../hooks';
@@ -18,10 +19,20 @@ interface AutomationDialogProps {
 }
 
 export function AutomationDialog({ onSuccess, onClose, editData }: AutomationDialogProps) {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        if (editData) setOpen(true);
+    }, [editData]);
+
+    const handleSuccess = () => {
+        setOpen(false);
+        onSuccess?.();
+    };
+
     const {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading,
         isLoadingDepartments,
         departamentos,
@@ -29,7 +40,12 @@ export function AutomationDialog({ onSuccess, onClose, editData }: AutomationDia
         posicoes,
         authCertificate,
         onSubmit,
-    } = useAutomationForm({ editData, onSuccess, onClose });
+    } = useAutomationForm({ open, editData, onSuccess: handleSuccess, onClose });
+
+    const handleOpenChange = (v: boolean) => {
+        setOpen(v);
+        if (!v) onDialogClose();
+    };
 
     const { register, control, formState: { errors } } = form;
 

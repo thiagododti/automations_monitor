@@ -1,9 +1,6 @@
 import { useState, useRef } from 'react';
 import { readDigitalCertificate, type ParsedCertificateData } from '@/features/business/lib/certificate';
-
-function onlyDigits(value: string): string {
-    return value.replace(/\D/g, '');
-}
+import { onlyDigits } from '@/lib/utils';
 
 interface UseBusinessCertificateOptions {
     getCnpj: () => string;

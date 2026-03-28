@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useBusinessForm } from '../hooks';
 import type { Business } from '../types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -15,10 +16,20 @@ interface BusinessDialogProps {
 }
 
 export function BusinessDialog({ onSuccess, onClose, editData }: BusinessDialogProps) {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        if (editData) setOpen(true);
+    }, [editData]);
+
+    const handleSuccess = () => {
+        setOpen(false);
+        onSuccess?.();
+    };
+
     const {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading,
         logoFile,
         setLogoFile,
@@ -36,7 +47,12 @@ export function BusinessDialog({ onSuccess, onClose, editData }: BusinessDialogP
         handleReadCertificate,
         watchedCertFields,
         onSubmit,
-    } = useBusinessForm({ editData, onSuccess, onClose });
+    } = useBusinessForm({ editData, onSuccess: handleSuccess, onClose });
+
+    const handleOpenChange = (v: boolean) => {
+        setOpen(v);
+        if (!v) onDialogClose();
+    };
 
     const { register, formState: { errors } } = form;
     const [certExpire, subjectCn, subjectC, subjectO, issuerCn, issuerC, issuerO] = watchedCertFields;

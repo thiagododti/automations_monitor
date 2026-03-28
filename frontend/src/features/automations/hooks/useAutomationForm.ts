@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -56,13 +56,13 @@ export interface AutomationEditData {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 interface UseAutomationFormProps {
+    open: boolean;
     editData?: AutomationEditData;
     onSuccess?: () => void;
     onClose?: () => void;
 }
 
-export function useAutomationForm({ editData, onSuccess, onClose }: UseAutomationFormProps) {
-    const [open, setOpen] = useState(false);
+export function useAutomationForm({ open, editData, onSuccess, onClose }: UseAutomationFormProps) {
     const qc = useQueryClient();
     const createMutation = useMutation({
         mutationFn: (data: AutomationCreate) => automationsApi.create(data),
@@ -95,7 +95,6 @@ export function useAutomationForm({ editData, onSuccess, onClose }: UseAutomatio
                 auth_certificate: editData.auth_certificate || false,
                 url_certificate: editData.url_certificate || '',
             });
-            setOpen(true);
         }
     }, [editData, reset]);
 
@@ -106,7 +105,6 @@ export function useAutomationForm({ editData, onSuccess, onClose }: UseAutomatio
             } else {
                 await createMutation.mutateAsync(data as AutomationCreate);
             }
-            setOpen(false);
             reset(defaultValues);
             onSuccess?.();
         } catch (error) {
@@ -115,18 +113,14 @@ export function useAutomationForm({ editData, onSuccess, onClose }: UseAutomatio
         }
     };
 
-    const handleOpenChange = (v: boolean) => {
-        setOpen(v);
-        if (!v) {
-            reset(defaultValues);
-            onClose?.();
-        }
+    const onDialogClose = () => {
+        reset(defaultValues);
+        onClose?.();
     };
 
     return {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading: createMutation.isPending || updateMutation.isPending,
         isLoadingDepartments,
         departamentos,

@@ -1,4 +1,5 @@
 import forge from 'node-forge';
+import { onlyDigits } from '@/lib/utils';
 
 export interface ParsedCertificateData {
     subject_cn: string;
@@ -28,10 +29,6 @@ function getAttrValue(attrs: forge.pki.CertificateField[], shortName: string): s
     return '';
 }
 
-function onlyDigits(value: string): string {
-    return value.replace(/\D/g, '');
-}
-
 function extractCnpjFromCertificate(
     subjectAttrs: forge.pki.CertificateField[]
 ): string | null {
@@ -55,7 +52,7 @@ function extractCnpjFromCertificate(
 
     const serialDigits =
         typeof serialValueRaw === 'string'
-            ? serialValueRaw.replace(/\D/g, '')
+            ? onlyDigits(serialValueRaw)
             : '';
 
     if (serialDigits.length >= 14) {
@@ -71,7 +68,7 @@ function extractCnpjFromCertificate(
 
     const matches = allSubjectValues.match(/\d{14}/);
 
-    return matches ? matches[0] : null;
+    return matches ? onlyDigits(matches[0]) : null;
 }
 
 function arrayBufferToBinaryString(buffer: ArrayBuffer): string {

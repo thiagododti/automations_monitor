@@ -53,7 +53,6 @@ interface UseBusinessFormProps {
 }
 
 export function useBusinessForm({ editData, onSuccess, onClose }: UseBusinessFormProps) {
-    const [open, setOpen] = useState(false);
     const qc = useQueryClient();
     const createMutation = useMutation({
         mutationFn: (data: BusinessCreate) => businessApi.create(data),
@@ -112,7 +111,6 @@ export function useBusinessForm({ editData, onSuccess, onClose }: UseBusinessFor
                 issuer_o: editData.issuer_o || '',
             });
             setLogoPreview(editData.logo || null);
-            setOpen(true);
         }
     }, [editData, reset]);
 
@@ -124,12 +122,9 @@ export function useBusinessForm({ editData, onSuccess, onClose }: UseBusinessFor
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
-    const handleOpenChange = (value: boolean) => {
-        setOpen(value);
-        if (!value) {
-            resetState();
-            onClose?.();
-        }
+    const onDialogClose = () => {
+        resetState();
+        onClose?.();
     };
 
     const submitHandler = async (data: BusinessFormData) => {
@@ -170,7 +165,6 @@ export function useBusinessForm({ editData, onSuccess, onClose }: UseBusinessFor
                     issuer_o: data.issuer_o || '',
                 });
             }
-            setOpen(false);
             resetState();
             onSuccess?.();
         } catch (error) {
@@ -181,8 +175,7 @@ export function useBusinessForm({ editData, onSuccess, onClose }: UseBusinessFor
 
     return {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading: createMutation.isPending || updateMutation.isPending,
         // logo
         logoFile,

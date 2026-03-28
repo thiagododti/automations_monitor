@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { useDepartmentForm } from '../hooks';
 import type { DepartmentEditData } from '../hooks';
@@ -17,13 +18,28 @@ interface DepartmentDialogProps {
 }
 
 export function DepartmentDialog({ onSuccess, onClose, editData }: DepartmentDialogProps) {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        if (editData) setOpen(true);
+    }, [editData]);
+
+    const handleSuccess = () => {
+        setOpen(false);
+        onSuccess?.();
+    };
+
     const {
         form,
-        open,
-        handleOpenChange,
+        onDialogClose,
         isLoading,
         onSubmit,
-    } = useDepartmentForm({ editData, onSuccess, onClose });
+    } = useDepartmentForm({ editData, onSuccess: handleSuccess, onClose });
+
+    const handleOpenChange = (v: boolean) => {
+        setOpen(v);
+        if (!v) onDialogClose();
+    };
 
     const { register, control, formState: { errors } } = form;
 

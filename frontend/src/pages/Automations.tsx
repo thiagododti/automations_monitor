@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTableState } from '@/shared/hooks/useTableState';
 import { useAutomations } from '@/features/automations/hooks';
+import { useAuth } from '@/features/auth/hooks';
 import type { AutomationFilters, Automation } from '@/features/automations/types';
 import { PaginationControls } from '@/shared/components/PaginationControls';
 import { FilterBar } from '@/shared/components/FilterBar';
@@ -14,6 +15,8 @@ const filterFields = [
 ];
 
 export default function AutomationsPage() {
+  const { user } = useAuth();
+  const isStaff = user?.is_staff === true;
   const { filters, page, setPage, handleFilter, handleClear } = useTableState<AutomationFilters>();
   const [editingAutomation, setEditingAutomation] = useState<Automation | null>(null);
 
@@ -47,7 +50,7 @@ export default function AutomationsPage() {
         onClear={handleClear}
       />
 
-      <AutomationTable data={data} isLoading={isLoading} onEdit={handleEditAutomation} />
+      <AutomationTable data={data} isLoading={isLoading} isStaff={isStaff} onEdit={handleEditAutomation} />
 
       {data && (
         <div className="px-4">
