@@ -17,7 +17,7 @@ services:
     container_name: botlogger_backend
     build: ./backend
     env_file:
-      - .env
+      - stack.env
     environment:
       - TZ=America/Sao_Paulo
     volumes:
@@ -57,7 +57,7 @@ services:
     depends_on:
       - botlogger_backend
     env_file:
-      - .env
+      - stack.env
     environment:
       - TZ=America/Sao_Paulo
     volumes:
