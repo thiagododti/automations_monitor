@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { useTableState } from '@/hooks/useTableState';
-import { useUsers } from '@/hooks/useUsers';
-import type { UserFilters, User } from '@/types/user';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { UserDialog } from '@/components/features/users/UserDialog';
-import { UserTable } from '@/components/features/users/UserTable';
-import { EmailFilter, FullNameFilter, UsernameFilter } from '@/filters/filters';
+import { useTableState } from '@/shared/hooks/useTableState';
+import { useUsers } from '@/features/users/hooks';
+import type { UserFilters, User } from '@/features/users/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import { UserDialog } from '@/features/users/components/UserDialog';
+import { UserTable } from '@/features/users/components/UserTable';
+import { userFullNameFilter, userEmailFilter, userUsernameFilter } from '@/features/users';
 
-const filterFields: FilterField[] = [
-  FullNameFilter,
-  EmailFilter,
-  UsernameFilter
+const filterFields = [
+  userFullNameFilter,
+  userEmailFilter,
+  userUsernameFilter
 ];
 
 export default function UsersPage() {

@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { useTableState } from '@/hooks/useTableState';
-import { useDepartments } from '@/hooks/useDepartments';
-import type { DepartmentFilters, Department } from '@/types/department';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { DepartmentDialog } from '@/components/features/departments/DepartmentDialog';
-import { DepartmentTable } from '@/components/features/departments/DepartmentTable';
+import { useTableState } from '@/shared/hooks/useTableState';
+import { useDepartments } from '@/features/departments/hooks';
+import type { DepartmentFilters, Department } from '@/features/departments/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import { DepartmentDialog } from '@/features/departments/components/DepartmentDialog';
+import { DepartmentTable } from '@/features/departments/components/DepartmentTable';
+import { departmentNameFilter, departmentDescriptionFilter } from '@/features/departments';
 
-const filterFields: FilterField[] = [
-  { key: 'name', label: 'Nome', type: 'text', placeholder: 'Buscar por nome' },
-  { key: 'description', label: 'Descrição', type: 'text', placeholder: 'Buscar por descrição' },
+const filterFields = [
+  departmentNameFilter,
+  departmentDescriptionFilter,
 ];
 
 export default function DepartmentsPage() {

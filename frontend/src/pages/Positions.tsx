@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { useTableState } from '@/hooks/useTableState';
-import { usePositions, usePositionNivels } from '@/hooks/usePositions';
-import type { PositionFilters, Position } from '@/types/position';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { PositionDialog } from '@/components/features/positions/PositionDialog';
-import { PositionTable } from '@/components/features/positions/PositionTable';
-import { DescriptionFilter, NameFilter, PositionNivelsFilter } from '@/filters/filters';
+import { useTableState } from '@/shared/hooks/useTableState';
+import { usePositions, usePositionNivels } from '@/features/positions/hooks';
+import type { PositionFilters, Position } from '@/features/positions/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import type { FilterField } from '@/shared/types/filters';
+import { PositionDialog } from '@/features/positions/components/PositionDialog';
+import { PositionTable } from '@/features/positions/components/PositionTable';
+import { positionNameFilter, positionDescriptionFilter } from '@/features/positions';
 
 export default function PositionsPage() {
     const { filters, page, setPage, handleFilter, handleClear } = useTableState<PositionFilters>();
@@ -16,8 +17,8 @@ export default function PositionsPage() {
     const { data: nivels } = usePositionNivels(true);
 
     const filterFields: FilterField[] = [
-        NameFilter,
-        DescriptionFilter,
+        positionNameFilter,
+        positionDescriptionFilter,
         {
             key: 'nivel',
             label: 'Nível',

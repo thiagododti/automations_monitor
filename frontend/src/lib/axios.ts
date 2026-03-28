@@ -1,6 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { isTokenExpired } from './jwt';
-import { navigateTo } from './navigation';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -64,9 +63,11 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem('refresh_token');
 
       if (!refreshToken || isTokenExpired(refreshToken)) {
+        processQueue(error, null);
+        isRefreshing = false;
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        navigateTo('/login');
+        window.dispatchEvent(new CustomEvent('auth:session-expired'));
         return Promise.reject(error);
       }
 
@@ -76,17 +77,21 @@ api.interceptors.response.use(
           { refresh: refreshToken }
         );
         localStorage.setItem('access_token', data.access);
-        if (data.refresh) {
-          localStorage.setItem('refresh_token', data.refresh);
-        }
+        const newRefresh = data.refresh ?? refreshToken;
+        localStorage.setItem('refresh_token', newRefresh);
         processQueue(null, data.access);
         originalRequest.headers.Authorization = `Bearer ${data.access}`;
+        window.dispatchEvent(
+          new CustomEvent('auth:token-refreshed', {
+            detail: { access: data.access, refresh: newRefresh },
+          })
+        );
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        navigateTo('/login');
+        window.dispatchEvent(new CustomEvent('auth:session-expired'));
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

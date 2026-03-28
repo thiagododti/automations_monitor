@@ -1,15 +1,15 @@
-import { useTableState } from '@/hooks/useTableState';
-import { useLogs } from '@/hooks/useLogs';
-import type { LogFilters } from '@/types/log';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { LogTable } from '@/components/features/Logs_page/LogTable';
-import { CreatedAtFilter, DescriptionFilter, ExecutionIdFilter } from '@/filters/filters';
+import { useTableState } from '@/shared/hooks/useTableState';
+import { useLogs } from '@/features/logs/hooks';
+import type { LogFilters } from '@/features/logs/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import { LogTable } from '@/features/logs/components/LogTable';
+import { logExecutionIdFilter, logDescriptionFilter, logCreatedAtFilter } from '@/features/logs';
 
-const filterFields: FilterField[] = [
-  ExecutionIdFilter,
-  DescriptionFilter,
-  CreatedAtFilter,
+const filterFields = [
+  logExecutionIdFilter,
+  logDescriptionFilter,
+  logCreatedAtFilter,
 ];
 
 export default function LogsPage() {

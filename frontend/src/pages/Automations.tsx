@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { useTableState } from '@/hooks/useTableState';
-import { useAutomations } from '@/hooks/useAutomations';
-import type { AutomationFilters, Automation } from '@/types/automation';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { AutomationDialog } from '@/components/features/automations/AutomationDialog';
-import { AutomationTable } from '@/components/features/automations/AutomationTable';
-import { IsActiveFilter, NameFilter } from '@/filters/filters';
+import { useTableState } from '@/shared/hooks/useTableState';
+import { useAutomations } from '@/features/automations/hooks';
+import type { AutomationFilters, Automation } from '@/features/automations/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import { AutomationDialog } from '@/features/automations/components/AutomationDialog';
+import { AutomationTable } from '@/features/automations/components/AutomationTable';
+import { automationNameFilter, automationIsActiveFilter } from '@/features/automations';
 
-const filterFields: FilterField[] = [
-  NameFilter,
-  IsActiveFilter,
+const filterFields = [
+  automationNameFilter,
+  automationIsActiveFilter,
 ];
 
 export default function AutomationsPage() {

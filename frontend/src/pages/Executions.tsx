@@ -1,16 +1,15 @@
-import { useTableState } from '@/hooks/useTableState';
-import { useExecutions } from '@/hooks/useExecutions';
-import type { ExecutionFilters } from '@/types/execution';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { ExecutionTable } from '@/components/features/executions/ExecutionTable';
-import { AutomationNameFilter, DateStartFilter, StatusFilters } from '@/filters/filters';
+import { useTableState } from '@/shared/hooks/useTableState';
+import { useExecutions } from '@/features/executions/hooks';
+import type { ExecutionFilters } from '@/features/executions/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import { ExecutionTable } from '@/features/executions/components/ExecutionTable';
+import { executionAutomationFilter, executionDateStartFilter, executionStatusFilter } from '@/features/executions';
 
-const filterFields: FilterField[] = [
-  AutomationNameFilter,
-  DateStartFilter,
-  StatusFilters,
-
+const filterFields = [
+  executionAutomationFilter,
+  executionDateStartFilter,
+  executionStatusFilter,
 ];
 
 export default function ExecutionsPage() {

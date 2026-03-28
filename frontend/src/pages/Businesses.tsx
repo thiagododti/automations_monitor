@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { useTableState } from '@/hooks/useTableState';
-import { useBusinesses } from '@/hooks/useBusiness';
-import type { Business, BusinessFilters } from '@/types/business';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { BusinessDialog } from '@/components/features/business/BusinessDialog';
-import { BusinessTable } from '@/components/features/business/BusinessTable';
-import { CNPJFilter, DescriptionFilter, NameFilter } from '@/filters/filters';
+import { useTableState } from '@/shared/hooks/useTableState';
+import { useBusinesses } from '@/features/business/hooks';
+import type { Business, BusinessFilters } from '@/features/business/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import { BusinessDialog } from '@/features/business/components/BusinessDialog';
+import { BusinessTable } from '@/features/business/components/BusinessTable';
+import { businessNameFilter, businessDescriptionFilter, businessCnpjFilter } from '@/features/business';
 
-const filterFields: FilterField[] = [
-    NameFilter,
-    DescriptionFilter,
-    CNPJFilter,
+const filterFields = [
+    businessNameFilter,
+    businessDescriptionFilter,
+    businessCnpjFilter,
 ];
 
 export default function BusinessesPage() {

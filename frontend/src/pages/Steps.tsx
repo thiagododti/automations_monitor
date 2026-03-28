@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useSteps } from '@/hooks/useSteps';
-import type { StepFilters } from '@/types/step';
-import { PaginationControls } from '@/components/shared/PaginationControls';
-import { FilterBar, type FilterField } from '@/components/shared/FilterBar';
-import { StepTable } from '@/components/features/steps/StepTable';
-import { DateStartFilter, ExecutionIdFilter, StatusFilters, StepIdentificationFilter } from '@/filters/filters';
+import { useSteps } from '@/features/steps/hooks';
+import type { StepFilters } from '@/features/steps/types';
+import { PaginationControls } from '@/shared/components/PaginationControls';
+import { FilterBar } from '@/shared/components/FilterBar';
+import { StepTable } from '@/features/steps/components/StepTable';
+import { stepExecutionIdFilter, stepIdentificationFilter, stepStatusFilter, stepDateStartFilter } from '@/features/steps';
 
-const filterFields: FilterField[] = [
-  ExecutionIdFilter,
-  StepIdentificationFilter,
-  StatusFilters,
-  DateStartFilter,
+const filterFields = [
+  stepExecutionIdFilter,
+  stepIdentificationFilter,
+  stepStatusFilter,
+  stepDateStartFilter,
 ];
 
 export default function StepsPage() {

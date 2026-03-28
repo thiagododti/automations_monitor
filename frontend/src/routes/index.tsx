@@ -1,40 +1,52 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { ProtectedRoute } from './ProtectedRoute';
-import { AppLayout } from '@/components/layout/AppLayout';
-import Login from '@/pages/Login';
-import DashboardKpiPage from '@/pages/DashboardKpi';
-import UsersPage from '@/pages/Users';
-import DepartmentsPage from '@/pages/Departments';
-import BusinessesPage from '@/pages/Businesses';
-import AutomationsPage from '@/pages/Automations';
-import ExecutionsPage from '@/pages/Executions';
-import ExecutionDetailPage from '@/pages/ExecutionDetail';
-import LogsPage from '@/pages/Logs';
-import StepsPage from '@/pages/Steps';
-import PositionsPage from '@/pages/Positions';
-import Dashboard from '@/pages/Dashboard';
+import { AppLayout } from '@/shared/layout/AppLayout';
+
+const Login = lazy(() => import('@/pages/Login'));
+const NotFoundPage = lazy(() => import('@/pages/NotFound'));
+const DashboardPage = lazy(() => import('@/pages/Dashboard'));
+const MonitorPage = lazy(() => import('@/pages/Monitor'));
+const UsersPage = lazy(() => import('@/pages/Users'));
+const DepartmentsPage = lazy(() => import('@/pages/Departments'));
+const BusinessesPage = lazy(() => import('@/pages/Businesses'));
+const AutomationsPage = lazy(() => import('@/pages/Automations'));
+const ExecutionsPage = lazy(() => import('@/pages/Executions'));
+const ExecutionDetailPage = lazy(() => import('@/pages/ExecutionDetail'));
+const LogsPage = lazy(() => import('@/pages/Logs'));
+const StepsPage = lazy(() => import('@/pages/Steps'));
+const PositionsPage = lazy(() => import('@/pages/Positions'));
+
+const FullPageLoader = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  </div>
+);
 
 export function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route element={<ProtectedRoute />}>
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<DashboardKpiPage />} />
-          <Route path="/monitoramento" element={<Dashboard />} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/departments" element={<DepartmentsPage />} />
-          <Route path="/businesses" element={<BusinessesPage />} />
-          <Route path="/automations" element={<AutomationsPage />} />
-          <Route path="/executions" element={<ExecutionsPage />} />
-          <Route path="/executions/:id" element={<ExecutionDetailPage />} />
-          <Route path="/logs" element={<LogsPage />} />
-          <Route path="/steps" element={<StepsPage />} />
-          <Route path="/positions" element={<PositionsPage />} />
+    <Suspense fallback={<FullPageLoader />}>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/monitoramento" element={<MonitorPage />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/departments" element={<DepartmentsPage />} />
+            <Route path="/businesses" element={<BusinessesPage />} />
+            <Route path="/automations" element={<AutomationsPage />} />
+            <Route path="/executions" element={<ExecutionsPage />} />
+            <Route path="/executions/:id" element={<ExecutionDetailPage />} />
+            <Route path="/logs" element={<LogsPage />} />
+            <Route path="/steps" element={<StepsPage />} />
+            <Route path="/positions" element={<PositionsPage />} />
+          </Route>
         </Route>
-      </Route>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Suspense>
   );
 }
